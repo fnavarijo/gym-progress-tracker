@@ -28,7 +28,7 @@ export default function RegisterPage() {
   >([]);
   const [currentPanel, setPanel] = useState(PANELS.EXERCISES);
 
-  const onSubmit = (e) => {
+  const onSubmit = (e: any) => {
     e.preventDefault();
     setExercises([...exercises, { ...exercise, id: Date.now().toString() }]);
     setExercise(initialExerciseState);
