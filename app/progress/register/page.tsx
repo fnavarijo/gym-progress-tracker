@@ -54,7 +54,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="px-4">
+    <main className="px-4 py-4">
       <nav></nav>
       <header className="flex items-center justify-center w-full gap-2">
         <Dumbbell className="h-6 w-6 text-primary" />
