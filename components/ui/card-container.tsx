@@ -1,16 +1,33 @@
 import { cn } from '@/lib/utils';
+import { cva } from 'class-variance-authority';
+
+const cardContainerVariants = cva(
+  ['bg-card text-card-foreground p-4 flex flex-col gap-6 rounded-xl border'],
+  {
+    variants: {
+      status: {
+        default: null,
+        selected: 'border-primary',
+      },
+    },
+    defaultVariants: {
+      status: 'default',
+    },
+  },
+);
 
 export function CardContainer({
   className,
   children,
-}: React.ComponentProps<'div'>) {
+  ...props
+}: React.ComponentProps<'div'> & {
+  status?: 'selected';
+}) {
   return (
     <div
       data-slot="card"
-      className={cn(
-        'bg-card text-card-foreground p-4 flex flex-col gap-6 rounded-xl border',
-        className,
-      )}
+      className={cn(cardContainerVariants({ status: props.status, className }))}
+      {...props}
     >
       {children}
     </div>

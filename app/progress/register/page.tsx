@@ -12,6 +12,12 @@ const initialExerciseState = {
   pr: 0,
 };
 
+const initialSelectedExerciseState = {
+  id: '',
+  name: '',
+  pr: 0,
+};
+
 enum PANELS {
   EXERCISES = 'EXERCISES',
   DETAILS = 'DETAILS',
@@ -19,10 +25,9 @@ enum PANELS {
 
 export default function RegisterPage() {
   const [exercise, setExercise] = useState(initialExerciseState);
-  const [selectedExercise, selectExercise] = useState({
-    name: 'Squat',
-    pr: 245,
-  });
+  const [selectedExercise, selectExercise] = useState(
+    initialSelectedExerciseState,
+  );
   const [exercises, setExercises] = useState<
     { id: string; name: string; pr: number }[]
   >([]);
@@ -60,15 +65,15 @@ export default function RegisterPage() {
       </CardContainer>
       <article className="mt-4">
         <div>
-          <CardContainer className="flex flex-row gap-4">
+          <CardContainer className="flex flex-row gap-4 bg-muted p-1">
             <button
-              className="flex justify-center gap-2 w-full"
+              className={`flex justify-center gap-2 w-full p-2 rounded-md  ${currentPanel === PANELS.EXERCISES && 'bg-card'}`}
               onClick={() => setPanel(PANELS.EXERCISES)}
             >
               <Menu /> Ejercicios
             </button>
             <button
-              className="flex justify-center gap-2 w-full"
+              className={`flex justify-center gap-2 w-full p-2 rounded-md ${currentPanel === PANELS.DETAILS && 'bg-card'}`}
               onClick={() => setPanel(PANELS.DETAILS)}
             >
               <Dumbbell />
@@ -137,10 +142,10 @@ export default function RegisterPage() {
                     <CardContainer
                       key={index}
                       className="flex flex-row items-center justify-between"
-                      // onClick={() => {
-                      //   console.log('Clicking');
-                      //   selectExercise(item);
-                      // }}
+                      onClick={() => selectExercise(item)}
+                      status={
+                        selectedExercise.id === item.id ? 'selected' : undefined
+                      }
                     >
                       <div className="flex flex-col text-lg">
                         {item.name}
