@@ -183,7 +183,13 @@ export default function RegisterPage() {
               {getPercentages(selectedExercise.pr).map(
                 ({ maxPR, percentage }, idx) => (
                   <CardContainer className="flex-row justify-between" key={idx}>
-                    <div className="rounded-full h-14 w-14 bg-primary flex justify-center items-center text-muted-+++++++++++++++++++++++++">
+                    <div
+                      className="rounded-full h-14 w-14 flex justify-center items-center text-muted "
+                      style={{
+                        backgroundColor: `rgba(195, 235, 120, ${percentage / 100})`,
+                        color: percentage > 50 ? '#231F20' : '#F6F2FF',
+                      }}
+                    >
                       {percentage} %
                     </div>
                     <div className="flex flex-col items-end justify-center">
