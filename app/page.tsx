@@ -6,6 +6,7 @@ import { WorkoutList } from '@/components/app/workout-list';
 import { NoCycleState } from '@/components/app/no-active-cycle';
 import { DashboardGreeting } from '@/components/app/dashboard-greeting';
 import { Button } from '@/components/ui/button';
+import { getUserActiveCycle } from '@/api/cycle/get-user-active-cycle';
 
 interface Workout {
   id: string;
@@ -25,23 +26,28 @@ interface CycleInfo {
   weeksCompleted: number;
 }
 
-const cycleInfo: CycleInfo = { currentWeek: 1, totalWeeks: 6, weeksCompleted: 0 };
+const cycleInfo: CycleInfo = {
+  currentWeek: 1,
+  totalWeeks: 6,
+  weeksCompleted: 0,
+};
 const weekProgress: WeekProgress = { completed: 1, total: 5 };
 const workouts: Workout[] = [
-  { id: '1', name: 'Back Squat',   topSet: 20, completed: true  },
-  { id: '2', name: 'Deadlift',     topSet: 20, completed: false },
-  { id: '3', name: 'Bench Press',  topSet: 20, completed: false },
+  { id: '1', name: 'Back Squat', topSet: 20, completed: true },
+  { id: '2', name: 'Deadlift', topSet: 20, completed: false },
+  { id: '3', name: 'Bench Press', topSet: 20, completed: false },
   { id: '4', name: 'Strict Press', topSet: 20, completed: false },
-  { id: '5', name: 'Front Squat',  topSet: 20, completed: false },
+  { id: '5', name: 'Front Squat', topSet: 20, completed: false },
 ];
 
-export default function HomePage() {
-  // TODO: replace with real DB lookup
-  const hasActiveCycle = true;
+export default async function HomePage() {
+  const activeCycle = await getUserActiveCycle();
+  const hasActiveCycle = activeCycle !== null;
 
   if (!hasActiveCycle) {
     return (
       <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
+        {/* Can we get rid of this suspense? */}
         <Suspense fallback={<div className="px-4 pt-6 pb-4 h-24" />}>
           <DashboardGreeting />
         </Suspense>
@@ -70,7 +76,13 @@ export default function HomePage() {
       </main>
       <div className="sticky bottom-0 bg-background px-4 pb-6 pt-2 flex flex-col gap-3">
         <Button asChild className="w-full" size="lg">
-          <Link href={firstIncomplete ? `/progress/workout/${firstIncomplete.id}` : '/progress/workout'}>
+          <Link
+            href={
+              firstIncomplete
+                ? `/progress/workout/${firstIncomplete.id}`
+                : '/progress/workout'
+            }
+          >
             Continue Workout
           </Link>
         </Button>
