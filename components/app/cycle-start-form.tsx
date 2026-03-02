@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CalendarDays, ChevronLeft } from 'lucide-react';
 
@@ -42,13 +42,14 @@ export function CycleStartForm() {
 
   const allPRsEntered = Object.values(prs).every((v) => v > 0);
 
-  const formattedDate = new Date(
-    startDate + 'T00:00:00',
-  ).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const formattedDate = new Date(startDate + 'T00:00:00').toLocaleDateString(
+    'en-US',
+    {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    },
+  );
 
   return (
     <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col pb-24">

@@ -1,8 +1,9 @@
-import { requireAuth } from '@/lib/auth';
 import { CycleProgressHeader } from '@/components/app/cycle-progress-header';
 import { WeekProgressCard } from '@/components/app/week-progress-card';
 import { WorkoutList } from '@/components/app/workout-list';
 import { NoCycleState } from '@/components/app/no-active-cycle';
+import { DashboardGreeting } from '@/components/app/dashboard-greeting';
+import { Suspense } from 'react';
 
 interface Workout {
   id: string;
@@ -35,32 +36,16 @@ const workouts: Workout[] = [
   { id: '4', name: 'Clean', topSet: 35, completed: false },
 ];
 
-function getFirstName(claims: Record<string, unknown>): string {
-  const metadata = claims.user_metadata as Record<string, unknown> | undefined;
-  const fullName =
-    (metadata?.full_name as string | undefined) ??
-    (metadata?.name as string | undefined) ??
-    (claims.email as string | undefined)?.split('@')[0] ??
-    'there';
-  return fullName.split(' ')[0];
-}
-
-export default async function HomePage() {
-  const claims = await requireAuth();
-  const firstName = getFirstName(claims as Record<string, unknown>);
-
+export default function HomePage() {
   // TODO: replace with real DB lookup
   const hasActiveCycle = false;
 
   if (!hasActiveCycle) {
     return (
       <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
-        <header className="px-4 pt-6 pb-4">
-          <h1 className="text-4xl font-bold text-foreground break-all">
-            Hey, {firstName}!
-          </h1>
-          <p className="text-muted-foreground mt-1">Ready to build momentum?</p>
-        </header>
+        <Suspense fallback={<div className="px-4 pt-6 pb-4 h-24" />}>
+          <DashboardGreeting />
+        </Suspense>
         <main className="flex-1 flex flex-col justify-center px-4 pb-8">
           <div className="flex flex-col gap-4">
             <NoCycleState />

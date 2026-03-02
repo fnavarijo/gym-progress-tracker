@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * Returns the authenticated user's claims, or null if not authenticated.
@@ -25,7 +25,7 @@ export async function requireAuth() {
   const claims = await getUser();
 
   if (!claims) {
-    redirect("/auth/login");
+    redirect('/auth/login');
   }
 
   return claims;
