@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CalendarDays } from 'lucide-react';
 
+import { createCycle } from '@/api/cycle/create-cycle';
 import { PlanMovement } from '@/api/plan/get-plan-movements';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -25,8 +26,9 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
 
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [calendarOpen, setCalendarOpen] = useState(false);
-
   const [focusedMovement, setFocusedMovement] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const allPRsEntered = Object.values(prs).every((v) => v > 0);
 
@@ -111,12 +113,33 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
 
       {/* Sticky bottom button */}
       <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto px-4 pb-6 pt-3 bg-background">
+        {submitError && (
+          <p className="text-destructive text-sm mb-2 text-center">{submitError}</p>
+        )}
         <Button
           className="w-full h-14 text-base rounded-2xl"
-          disabled={!allPRsEntered}
-          onClick={() => router.push('/cycle/summary')}
+          disabled={!allPRsEntered || submitting}
+          onClick={async () => {
+            setSubmitting(true);
+            setSubmitError(null);
+
+            const date = startDate.toLocaleDateString('sv-SE');
+            const prsByMovementId = Object.fromEntries(
+              movements.map((m) => [m.id, prs[m.name]]),
+            ) as Record<number, number>;
+
+            const { error } = await createCycle({ date, prs: prsByMovementId });
+
+            if (error) {
+              setSubmitError(error);
+              setSubmitting(false);
+              return;
+            }
+
+            router.push('/');
+          }}
         >
-          Start Cycle
+          {submitting ? 'Creating…' : 'Start Cycle'}
         </Button>
       </div>
     </>
