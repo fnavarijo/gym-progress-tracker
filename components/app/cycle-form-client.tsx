@@ -6,7 +6,9 @@ import { CalendarDays } from 'lucide-react';
 
 import { PlanMovement } from '@/api/plan/get-plan-movements';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { CardContainer } from '@/components/ui/card-container';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { WeekPreview } from './week-preview';
 
@@ -21,41 +23,49 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
     Object.fromEntries(movements.map((m) => [m.name, 0])),
   );
 
-  const [startDate, setStartDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  );
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [focusedMovement, setFocusedMovement] = useState<string | null>(null);
 
   const allPRsEntered = Object.values(prs).every((v) => v > 0);
 
-  const formattedDate = new Date(startDate + 'T00:00:00').toLocaleDateString(
-    'en-US',
-    {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    },
-  );
+  const formattedDate = startDate.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return (
     <>
+      {/* Start Date section */}
       <section>
         <h2 className="text-lg font-semibold mb-3">Start Date</h2>
-        <label className="cursor-pointer block">
-          <CardContainer className="flex-row items-center gap-3">
-            <CalendarDays className="size-5 text-primary shrink-0" />
-            <span className="text-base font-medium">{formattedDate}</span>
-          </CardContainer>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="sr-only"
-          />
-        </label>
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <button type="button" className="w-full text-left">
+              <CardContainer className="flex-row items-center gap-3">
+                <CalendarDays className="size-5 text-primary shrink-0" />
+                <span className="text-base font-medium">{formattedDate}</span>
+              </CardContainer>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={startDate}
+              onSelect={(date) => {
+                if (date) {
+                  setStartDate(date);
+                  setCalendarOpen(false);
+                }
+              }}
+            />
+          </PopoverContent>
+        </Popover>
       </section>
 
+      {/* Enter Your PRs section */}
       <section>
         <h2 className="text-lg font-semibold">Enter Your PRs</h2>
         <p className="text-muted-foreground text-sm mb-3">Unit: lb</p>
@@ -96,13 +106,14 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
         </div>
       </section>
 
-      {/* Do we need the preview, or do we show the plan instead? */}
+      {/* Week 1 Preview — conditionally mounted */}
       {allPRsEntered && <WeekPreview movements={movements} prs={prs} />}
 
+      {/* Sticky bottom button */}
       <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto px-4 pb-6 pt-3 bg-background">
         <Button
           className="w-full h-14 text-base rounded-2xl"
-          disabled={!allPRsEntered || !startDate}
+          disabled={!allPRsEntered}
           onClick={() => router.push('/cycle/summary')}
         >
           Start Cycle
