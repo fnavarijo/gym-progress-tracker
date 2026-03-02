@@ -5,13 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start development server (localhost:3000)
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # Run ESLint
+npm run dev        # Start development server (localhost:3000)
+npm run build      # Production build
+npm run start      # Start production server
+npm run lint       # Run ESLint
+npm run test       # Run Jest tests
+npm run test:watch # Run Jest in watch mode
 ```
-
-No test runner is configured.
 
 ## Environment Setup
 
@@ -66,3 +66,22 @@ Dark/light mode via `next-themes`. All colors are CSS variables (HSL format) def
 ### Path Aliases
 
 `@/*` maps to the project root. Use `@/components`, `@/lib`, etc. for imports.
+
+## Testing
+
+**Framework:** Jest + `@testing-library/react` (configured via `next/jest`). Test files live in `__tests__/` subdirectories next to the module they test and use the `.spec.ts` extension.
+
+**TDD for `api/` functions:** Always write tests before implementing any function in the `api/` folder. Write failing tests first, then implement to make them pass.
+
+### Mocking pattern
+
+```ts
+jest.mock('@/lib/supabase/server');
+const mockCreateClient = jest.mocked(createClient);
+
+// Build a fluent mock matching the actual query chain, e.g.:
+const order = jest.fn().mockResolvedValue({ data, error });
+const eq    = jest.fn().mockReturnValue({ order });
+// ...
+mockCreateClient.mockResolvedValue(mockSupabase as never);
+```
