@@ -1,7 +1,7 @@
 import { WorkoutItem } from './workout-item';
 
 interface Workout {
-  id: string;
+  id: number;
   name: string;
   topSet: number;
   completed: boolean;

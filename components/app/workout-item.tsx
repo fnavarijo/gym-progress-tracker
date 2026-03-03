@@ -3,7 +3,7 @@ import { CheckCircle2, Circle } from 'lucide-react';
 import { CardContainer } from '@/components/ui/card-container';
 
 interface Workout {
-  id: string;
+  id: number;
   name: string;
   topSet: number;
   completed: boolean;
