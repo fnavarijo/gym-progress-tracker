@@ -20,8 +20,11 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
 
   const firstIncomplete = workouts.find((w) => !w.completed);
 
-  // Hardcoded until week-calc feature is built
-  const cycleInfo = { currentWeek: 1, totalWeeks: 6, weeksCompleted: 0 };
+  const cycleInfo = {
+    currentWeek:    cycle.currentWeek,
+    totalWeeks:     cycle.totalWeeks,
+    weeksCompleted: cycle.currentWeek - 1,
+  };
 
   return (
     <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">

@@ -15,9 +15,8 @@ function makeMockSupabase({
   cycleError: object | null;
 }) {
   const maybeSingle = jest.fn().mockResolvedValue({ data: cycleData, error: cycleError });
-  const secondEq = jest.fn().mockReturnValue({ maybeSingle });
-  const firstEq = jest.fn().mockReturnValue({ eq: secondEq });
-  const select = jest.fn().mockReturnValue({ eq: firstEq });
+  const eq = jest.fn().mockReturnValue({ maybeSingle });
+  const select = jest.fn().mockReturnValue({ eq });
   const from = jest.fn().mockReturnValue({ select });
 
   return {
@@ -36,6 +35,10 @@ const cycleRow = {
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-02T00:00:00Z',
+  end_date: '2026-02-11',
+  current_week: 3,
+  total_weeks: 6,
+  days_remaining: 21,
 };
 
 const mockUser = { id: 'user-123' };
@@ -59,6 +62,10 @@ describe('getUserActiveCycle', () => {
       status: 'active',
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-02T00:00:00Z',
+      endDate: '2026-02-11',
+      currentWeek: 3,
+      totalWeeks: 6,
+      daysRemaining: 21,
     });
   });
 
