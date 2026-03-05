@@ -11,18 +11,18 @@ interface WorkoutProgressProps {
 }
 
 export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
-  const workouts = await getWorkoutByWeek(cycle.id, 1);
+  const workouts = await getWorkoutByWeek(cycle.id, cycle.currentWeek);
 
   const weekProgress = {
     completed: workouts.filter((w) => w.completed).length,
-    total:     workouts.length,
+    total: workouts.length,
   };
 
   const firstIncomplete = workouts.find((w) => !w.completed);
 
   const cycleInfo = {
-    currentWeek:    cycle.currentWeek,
-    totalWeeks:     cycle.totalWeeks,
+    currentWeek: cycle.currentWeek,
+    totalWeeks: cycle.totalWeeks,
     weeksCompleted: cycle.currentWeek - 1,
   };
 
@@ -43,7 +43,11 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
         </section>
       </main>
       <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
-        <Button asChild className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
+        <Button
+          asChild
+          className="w-full rounded-xl h-14 text-base font-semibold"
+          size="lg"
+        >
           <Link
             href={
               firstIncomplete
@@ -54,7 +58,12 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
             Continue Workout
           </Link>
         </Button>
-        <Button asChild variant="ghost" className="w-full rounded-xl h-11 text-muted-foreground" size="lg">
+        <Button
+          asChild
+          variant="ghost"
+          className="w-full rounded-xl h-11 text-muted-foreground"
+          size="lg"
+        >
           <Link href="/cycle/summary">View Full Cycle</Link>
         </Button>
       </div>
