@@ -10,7 +10,7 @@ interface Workout {
 export function WorkoutList({ workouts }: { workouts: Workout[] }) {
   return (
     <section>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {workouts.map((workout) => (
           <WorkoutItem key={workout.id} workout={workout} />
         ))}

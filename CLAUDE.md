@@ -59,9 +59,11 @@ npx shadcn@latest add <component>
 
 Custom app components go in `components/app/`. The `cn()` utility from `@/lib/utils` merges Tailwind classes (clsx + tailwind-merge).
 
+**Style guide:** See [`docs/ui-style-guide.md`](docs/ui-style-guide.md) for typography scale, color tokens, card patterns, pill/badge variants, button conventions, and completed-state styles. Follow this guide for all new and updated UI components.
+
 ### Theming
 
-Dark/light mode via `next-themes`. All colors are CSS variables (HSL format) defined in `app/globals.css` and referenced in `tailwind.config.ts`. The `ThemeProvider` is set up in the root layout.
+Dark/light mode via `next-themes`. All colors are CSS variables (HSL format) defined in `app/globals.css` and referenced in `tailwind.config.ts`. The `ThemeProvider` is set up in the root layout. Never hardcode hex or HSL values — always use Tailwind semantic tokens (see style guide).
 
 ### Path Aliases
 
