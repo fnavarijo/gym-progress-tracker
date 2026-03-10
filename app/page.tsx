@@ -1,11 +1,9 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { NoCycleState } from '@/components/app/no-active-cycle';
 import { DashboardGreeting } from '@/components/app/dashboard-greeting';
 import { WorkoutProgress } from '@/components/app/workout-progress';
 import { getUserActiveCycle } from '@/api/cycle/get-user-active-cycle';
 import { LogoutButton } from '@/components/logout-button';
-import { Button } from '@/components/ui/button';
 
 function WorkoutProgressSkeleton() {
   return (
@@ -39,9 +37,6 @@ export default async function HomePage() {
           <NoCycleState />
         </main>
         <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
-          <Button asChild className="rounded-xl h-14 text-base font-semibold w-full">
-            <Link href="/cycle/new">Create Cycle</Link>
-          </Button>
           <LogoutButton />
         </div>
       </div>
