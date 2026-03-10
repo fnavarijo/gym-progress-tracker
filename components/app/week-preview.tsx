@@ -9,8 +9,8 @@ interface WeekPreviewProps {
 export function WeekPreview({ movements, prs }: WeekPreviewProps) {
   return (
     <section>
-      <h2 className="text-lg font-semibold">Week 1 Preview</h2>
-      <p className="text-muted-foreground text-sm mb-3">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Week 1 Preview</h2>
+      <p className="text-xs text-muted-foreground mb-3">
         Calculated working sets for your first week
       </p>
       <div className="flex flex-col gap-3">

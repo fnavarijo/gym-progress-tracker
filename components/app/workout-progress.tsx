@@ -5,6 +5,7 @@ import { CycleProgressHeader } from '@/components/app/cycle-progress-header';
 import { WeekProgressCard } from '@/components/app/week-progress-card';
 import { WorkoutList } from '@/components/app/workout-list';
 import { Button } from '@/components/ui/button';
+import { LogoutButton } from '@/components/logout-button';
 
 interface WorkoutProgressProps {
   cycle: Cycle;
@@ -69,6 +70,7 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
         >
           <Link href="/cycle/summary">View Full Cycle</Link>
         </Button>
+        <LogoutButton />
       </div>
     </div>
   );

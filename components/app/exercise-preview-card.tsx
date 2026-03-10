@@ -19,7 +19,7 @@ export function ExercisePreviewCard({ name, pr }: ExercisePreviewCardProps) {
   if (pr === 0) {
     return (
       <CardContainer className="gap-2">
-        <p className="text-sm font-medium">{name}</p>
+        <p className="font-semibold">{name}</p>
         <p className="text-center text-sm text-muted-foreground">
           Enter PR to preview working sets
         </p>
@@ -29,8 +29,8 @@ export function ExercisePreviewCard({ name, pr }: ExercisePreviewCardProps) {
 
   return (
     <CardContainer className="gap-3">
-      <p className="text-sm font-semibold">{name}</p>
-      <div className="bg-secondary rounded-lg overflow-hidden">
+      <p className="font-semibold">{name}</p>
+      <div className="bg-muted rounded-lg overflow-hidden">
         {SETS.map((set, index) => (
           <div key={set.label}>
             <div className="flex items-center justify-between px-3 py-2.5">

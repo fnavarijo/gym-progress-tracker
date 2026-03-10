@@ -21,6 +21,12 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=   # Can also use legacy ANON key here
 ```
 
+## App Flows
+
+**Source of truth:** `docs/flows/` contains documentation for each user flow in the app. Always consult these files before building, modifying, or verifying any flow-related feature.
+
+---
+
 ## Architecture
 
 **Stack:** Next.js (App Router) + Supabase (auth + database) + Tailwind CSS + shadcn/ui
@@ -60,6 +66,8 @@ npx shadcn@latest add <component>
 Custom app components go in `components/app/`. The `cn()` utility from `@/lib/utils` merges Tailwind classes (clsx + tailwind-merge).
 
 **Style guide:** See [`docs/ui-style-guide.md`](docs/ui-style-guide.md) for typography scale, color tokens, card patterns, pill/badge variants, button conventions, and completed-state styles. Follow this guide for all new and updated UI components.
+
+**IMPORTANT:** Any implementation that requires UI changes MUST strictly follow `docs/ui-style-guide.md`. This includes typography classes, color tokens, spacing, card patterns, pills/badges, buttons, and icons. Never deviate from the style guide conventions.
 
 ### Theming
 

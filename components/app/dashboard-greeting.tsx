@@ -15,11 +15,11 @@ export async function DashboardGreeting() {
   const firstName = getFirstName(claims as Record<string, unknown>);
 
   return (
-    <header className="px-4 pt-6 pb-4">
-      <h1 className="text-4xl font-bold text-foreground break-all">
+    <header className="px-4 pt-8 pb-4">
+      <h1 className="text-4xl font-bold tracking-tight leading-none truncate">
         Hey, {firstName}!
       </h1>
-      <p className="text-muted-foreground mt-1">Ready to build momentum?</p>
+      <p className="text-muted-foreground mt-2">Ready to build momentum?</p>
     </header>
   );
 }

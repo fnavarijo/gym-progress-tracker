@@ -153,6 +153,10 @@ export function WorkoutDetailView({ workout }: WorkoutDetailProps) {
                   <span className="text-xs text-muted-foreground">{s.percentage}%</span>
                   <span className="text-xs text-muted-foreground">•</span>
                   <span className="text-xs font-semibold text-foreground">x{s.reps} reps</span>
+                  <span className="text-xs text-muted-foreground">•</span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.max(0, (s.weight - 45) / 2)} lb/side
+                  </span>
                 </div>
               </div>
 

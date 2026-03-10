@@ -42,7 +42,7 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
     <>
       {/* Start Date section */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Start Date</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Start Date</h2>
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
             <button type="button" className="w-full text-left">
@@ -69,8 +69,8 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
 
       {/* Enter Your PRs section */}
       <section>
-        <h2 className="text-lg font-semibold">Enter Your PRs</h2>
-        <p className="text-muted-foreground text-sm mb-3">Unit: lb</p>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Enter Your PRs</h2>
+        <p className="text-xs text-muted-foreground mb-3">Unit: lb</p>
         <div className="flex flex-col gap-3">
           {movements.map((movement) => (
             <CardContainer
@@ -80,7 +80,7 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
                 focusedMovement === movement.name && 'border-primary',
               )}
             >
-              <span className="text-sm font-medium">{movement.name}</span>
+              <span className="font-semibold">{movement.name}</span>
               <input
                 type="number"
                 min="0"
@@ -96,7 +96,7 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
                 onFocus={() => setFocusedMovement(movement.name)}
                 onBlur={() => setFocusedMovement(null)}
                 className={cn(
-                  'w-20 h-10 rounded-lg bg-secondary text-right px-3 text-base',
+                  'w-20 h-10 rounded-lg bg-muted text-right px-3 text-base',
                   'focus:outline-none focus:ring-2 focus:ring-primary',
                   '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none',
                   '[&::-webkit-outer-spin-button]:appearance-none',
@@ -112,12 +112,12 @@ export function CycleFormClient({ movements }: CycleFormClientProps) {
       {allPRsEntered && <WeekPreview movements={movements} prs={prs} />}
 
       {/* Sticky bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto px-4 pb-6 pt-3 bg-background">
+      <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
         {submitError && (
           <p className="text-destructive text-sm mb-2 text-center">{submitError}</p>
         )}
         <Button
-          className="w-full h-14 text-base rounded-2xl"
+          className="w-full h-14 text-base rounded-xl font-semibold"
           disabled={!allPRsEntered || submitting}
           onClick={async () => {
             setSubmitting(true);
