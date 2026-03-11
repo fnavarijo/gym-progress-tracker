@@ -1,9 +1,13 @@
+import { notFound } from 'next/navigation';
 import { Calendar, Target, TrendingUp } from 'lucide-react';
 import { BackButton } from '@/components/app/back-button';
 import { CardContainer } from '@/components/ui/card-container';
-import { Button } from '@/components/ui/button';
+import { getPlanBySlug } from '@/api/plan/get-plan-by-slug';
+import { StartEvaluationButton } from '@/components/app/start-evaluation-button';
 
-export default function CycleOnboardingPage() {
+export default async function CycleOnboardingPage() {
+  const plan = await getPlanBySlug('onboarding');
+  if (!plan) notFound();
   return (
     <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
       <div className="bg-gradient-to-b from-primary/8 to-transparent">
@@ -59,10 +63,7 @@ export default function CycleOnboardingPage() {
         </section>
       </main>
       <div className="sticky bottom-0 px-4 pb-6 pt-10 bg-gradient-to-t from-background via-background/95 to-transparent">
-        {/* TODO: wire up to create evaluation week */}
-        <Button className="rounded-xl h-14 text-base font-semibold w-full">
-          Start Evaluation Week
-        </Button>
+        <StartEvaluationButton planId={plan.id} />
       </div>
     </div>
   );

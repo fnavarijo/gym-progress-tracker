@@ -5,26 +5,37 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CardContainer } from '@/components/ui/card-container';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Check, Dumbbell, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Dumbbell, Loader2, Trophy } from 'lucide-react';
 import type { WorkoutDetail, WorkoutSetDetail } from '@/api/workout/get-workout-detail';
 import { updateWorkoutSet } from '@/api/workout/update-workout-set';
 import { updateWorkout } from '@/api/workout/update-workout';
+import { updateEvaluationWorkoutSet } from '@/api/workout/update-evaluation-workout-set';
+import { createEvaluationResult } from '@/api/workout/create-evaluation-result';
 
 interface WorkoutDetailProps {
   workout: WorkoutDetail;
+  isEvaluation: boolean;
+  cycleMovementId: number;
 }
 
-export function WorkoutDetailView({ workout }: WorkoutDetailProps) {
+export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: WorkoutDetailProps) {
   const router = useRouter();
 
   const [completedSets, setCompletedSets] = useState<Set<number>>(
     new Set(workout.sets.filter((s) => s.completedAt !== null).map((s) => s.setNumber)),
   );
+  const [setWeights, setSetWeights] = useState<Record<number, string>>({});
 
   const [finishing, setFinishing] = useState(false);
 
-  const allComplete = completedSets.size === workout.sets.length;
+  const allComplete = isEvaluation
+    ? workout.sets.every((s) => {
+        const v = setWeights[s.setNumber];
+        return v !== undefined && v.trim() !== '' && Number(v) > 0;
+      })
+    : completedSets.size === workout.sets.length;
 
   const toggleSet = async (set: WorkoutSetDetail) => {
     const wasCompleted = completedSets.has(set.setNumber);
@@ -49,6 +60,28 @@ export function WorkoutDetailView({ workout }: WorkoutDetailProps) {
 
   const handleFinish = async () => {
     setFinishing(true);
+
+    if (isEvaluation) {
+      for (const s of workout.sets) {
+        const weight = parseFloat(setWeights[s.setNumber]);
+        const { error } = await updateEvaluationWorkoutSet(s.id, weight);
+        if (error) {
+          setFinishing(false);
+          toast.error('Could not save sets. Please try again.');
+          return;
+        }
+      }
+
+      const lastSet = workout.sets.reduce((a, b) => (b.setNumber > a.setNumber ? b : a));
+      const lastWeight = parseFloat(setWeights[lastSet.setNumber]);
+      const { error: evalError } = await createEvaluationResult(cycleMovementId, lastWeight);
+      if (evalError) {
+        setFinishing(false);
+        toast.error('Could not save evaluation result. Please try again.');
+        return;
+      }
+    }
+
     const { error } = await updateWorkout(workout.id);
     if (error) {
       setFinishing(false);
@@ -91,83 +124,125 @@ export function WorkoutDetailView({ workout }: WorkoutDetailProps) {
       </div>
 
       <main className="flex-1 overflow-y-auto px-4 pb-40 flex flex-col gap-3 mt-4">
-        <CardContainer className="gap-3">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-                1RM / PR
-              </p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-5xl font-bold tabular-nums leading-none text-foreground">
-                  {workout.oneRM}
-                </span>
-                <span className="text-xl font-medium text-muted-foreground">lb</span>
-              </div>
-            </div>
-            <Dumbbell className="w-5 h-5 text-muted-foreground mt-1" />
-          </div>
-        </CardContainer>
-
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
-          Sets
-        </p>
-
-        {workout.sets.map((s) => {
-          const isComplete = completedSets.has(s.setNumber);
-          return (
-            <div
-              key={s.setNumber}
-              className={cn(
-                'flex items-center gap-4 rounded-xl border bg-card px-4 py-4 cursor-pointer transition-colors',
-                isComplete ? 'border-primary bg-primary/5' : 'hover:bg-accent',
-              )}
-              onClick={() => toggleSet(s)}
-            >
-              <div
-                className={cn(
-                  'w-1 self-stretch rounded-full shrink-0',
-                  isComplete ? 'bg-primary' : 'bg-muted-foreground/30',
-                )}
-              />
-              <div
-                className={cn(
-                  'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors',
-                  isComplete
-                    ? 'bg-primary'
-                    : 'border border-muted-foreground/40',
-                )}
-              >
-                {isComplete ? (
-                  <Check className="w-4 h-4 text-primary-foreground" />
-                ) : (
-                  <span className="text-sm font-medium text-muted-foreground">{s.setNumber}</span>
-                )}
-              </div>
-
-              <div className="flex-1">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold tabular-nums">{s.weight}</span>
-                  <span className="text-base text-muted-foreground">lb</span>
+        {!isEvaluation && (
+          <CardContainer className="gap-3">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+                  1RM / PR
+                </p>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-5xl font-bold tabular-nums leading-none text-foreground">
+                    {workout.oneRM}
+                  </span>
+                  <span className="text-xl font-medium text-muted-foreground">lb</span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-xs text-muted-foreground">{s.percentage}%</span>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs font-semibold text-foreground">x{s.reps} reps</span>
-                  <span className="text-xs text-muted-foreground">•</span>
+              </div>
+              <Dumbbell className="w-5 h-5 text-muted-foreground mt-1" />
+            </div>
+          </CardContainer>
+        )}
+
+        {isEvaluation ? (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
+              Evaluation Sets
+            </p>
+
+            {workout.sets.map((s) => (
+              <div
+                key={s.setNumber}
+                className="rounded-xl border bg-card px-4 py-4 flex flex-col gap-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Set {s.setNumber}
+                  </span>
                   <span className="text-xs text-muted-foreground">
-                    {Math.max(0, (s.weight - 45) / 2)} lb/side
+                    {s.percentage}% · ×{s.reps} reps
                   </span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    min={1}
+                    placeholder="0"
+                    value={setWeights[s.setNumber] ?? ''}
+                    onChange={(e) =>
+                      setSetWeights((prev) => ({ ...prev, [s.setNumber]: e.target.value }))
+                    }
+                    className="text-2xl font-bold tabular-nums h-12 rounded-xl text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <span className="text-base font-medium text-muted-foreground shrink-0">lb</span>
+                </div>
               </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
+              Sets
+            </p>
 
-              {!isComplete && (
-                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0">
-                  Tap
-                </span>
-              )}
-            </div>
-          );
-        })}
+            {workout.sets.map((s) => {
+              const isComplete = completedSets.has(s.setNumber);
+              return (
+                <div
+                  key={s.setNumber}
+                  className={cn(
+                    'flex items-center gap-4 rounded-xl border bg-card px-4 py-4 cursor-pointer transition-colors',
+                    isComplete ? 'border-primary bg-primary/5' : 'hover:bg-accent',
+                  )}
+                  onClick={() => toggleSet(s)}
+                >
+                  <div
+                    className={cn(
+                      'w-1 self-stretch rounded-full shrink-0',
+                      isComplete ? 'bg-primary' : 'bg-muted-foreground/30',
+                    )}
+                  />
+                  <div
+                    className={cn(
+                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors',
+                      isComplete
+                        ? 'bg-primary'
+                        : 'border border-muted-foreground/40',
+                    )}
+                  >
+                    {isComplete ? (
+                      <Check className="w-4 h-4 text-primary-foreground" />
+                    ) : (
+                      <span className="text-sm font-medium text-muted-foreground">{s.setNumber}</span>
+                    )}
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold tabular-nums">{s.weight}</span>
+                      <span className="text-base text-muted-foreground">lb</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-xs text-muted-foreground">{s.percentage}%</span>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs font-semibold text-foreground">x{s.reps} reps</span>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">
+                        {Math.max(0, (s.weight - 45) / 2)} lb/side
+                      </span>
+                    </div>
+                  </div>
+
+                  {!isComplete && (
+                    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0">
+                      Tap
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </>
+        )}
       </main>
 
       <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
@@ -178,12 +253,14 @@ export function WorkoutDetailView({ workout }: WorkoutDetailProps) {
         >
           {finishing ? (
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          ) : isEvaluation ? (
+            <Trophy className="w-5 h-5 mr-2" />
           ) : (
             <Check className="w-5 h-5 mr-2" />
           )}
-          {finishing ? 'Finishing…' : 'Finish Workout'}
+          {finishing ? 'Finishing…' : isEvaluation ? 'Save PR & Finish' : 'Finish Workout'}
         </Button>
-        {!allComplete && (
+        {!allComplete && !isEvaluation && (
           <p className="text-center text-xs text-muted-foreground">
             {remaining} set{remaining !== 1 ? 's' : ''} remaining
           </p>

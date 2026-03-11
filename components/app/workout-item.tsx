@@ -1,19 +1,12 @@
 import Link from 'next/link';
 import { CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CycleMovementEntry } from '@/api/workout/get-cycle-movements-for-week';
 
 const DAY_ABBR = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-interface Workout {
-  id: number;
-  name: string;
-  topSet: number;
-  completed: boolean;
-  dayOfWeek: number;
-}
-
-export function WorkoutItem({ workout, todayDayOfWeek }: { workout: Workout; todayDayOfWeek: number }) {
-  const { id, name, topSet, completed, dayOfWeek } = workout;
+export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovementEntry; todayDayOfWeek: number }) {
+  const { cycleMovementId, name, maxPr, completed, dayOfWeek } = movement;
   const dayLabel = DAY_ABBR[dayOfWeek] ?? '';
   const locked   = !completed && dayOfWeek !== 0 && dayOfWeek > todayDayOfWeek;
 
@@ -38,7 +31,7 @@ export function WorkoutItem({ workout, todayDayOfWeek }: { workout: Workout; tod
         </p>
         <div className="flex items-center gap-2 mt-0.5">
           <p className="text-xs text-muted-foreground">
-            Top set: <span className="font-semibold text-foreground">{topSet} lb</span>
+            Max PR: <span className="font-semibold text-foreground">{maxPr !== null ? `${maxPr} lb` : '—'}</span>
           </p>
           {dayLabel && (
             <>
@@ -62,7 +55,7 @@ export function WorkoutItem({ workout, todayDayOfWeek }: { workout: Workout; tod
   );
 
   if (!locked && !completed) {
-    return <Link href={`/progress/workout/${id}`}>{content}</Link>;
+    return <Link href={`/progress/workout/${cycleMovementId}`}>{content}</Link>;
   }
 
   return content;

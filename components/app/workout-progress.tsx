@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Cycle } from '@/api/cycle/get-user-active-cycle';
-import { getWorkoutByWeek } from '@/api/workout/get-workout-by-week';
+import { getCycleMovementsForWeek } from '@/api/workout/get-cycle-movements-for-week';
 import { CycleProgressHeader } from '@/components/app/cycle-progress-header';
 import { WeekProgressCard } from '@/components/app/week-progress-card';
 import { WorkoutList } from '@/components/app/workout-list';
@@ -12,21 +12,21 @@ interface WorkoutProgressProps {
 }
 
 export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
-  const workouts = await getWorkoutByWeek(cycle.id, cycle.currentWeek);
+  const movements = await getCycleMovementsForWeek(cycle.id, cycle.planId, cycle.currentWeek);
 
   // ISO weekday: 1 = Monday … 7 = Sunday
   const jsDay = new Date().getDay();
   const todayDayOfWeek = jsDay === 0 ? 7 : jsDay;
 
   const weekProgress = {
-    completed: workouts.filter((w) => w.completed).length,
-    total: workouts.length,
+    completed: movements.filter((m) => m.completed).length,
+    total: movements.length,
   };
 
-  const todayWorkouts           = workouts.filter((w) => w.dayOfWeek === todayDayOfWeek);
-  const availableWorkouts       = workouts.filter((w) => w.dayOfWeek === 0 || w.dayOfWeek <= todayDayOfWeek);
-  const firstIncompleteToday    = availableWorkouts.find((w) => !w.completed);
-  const todayAllDone            = todayWorkouts.length > 0 && todayWorkouts.every((w) => w.completed);
+  const todayWorkouts           = movements.filter((m) => m.dayOfWeek === todayDayOfWeek);
+  const availableWorkouts       = movements.filter((m) => m.dayOfWeek === 0 || m.dayOfWeek <= todayDayOfWeek);
+  const firstIncompleteToday    = availableWorkouts.find((m) => !m.completed);
+  const todayAllDone            = todayWorkouts.length > 0 && todayWorkouts.every((m) => m.completed);
 
   const cycleInfo = {
     currentWeek: cycle.currentWeek,
@@ -47,13 +47,13 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             This Week&apos;s Lifts
           </h2>
-          <WorkoutList workouts={workouts} todayDayOfWeek={todayDayOfWeek} />
+          <WorkoutList movements={movements} todayDayOfWeek={todayDayOfWeek} />
         </section>
       </main>
       <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
         {firstIncompleteToday ? (
           <Button asChild className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
-            <Link href={`/progress/workout/${firstIncompleteToday.id}`}>
+            <Link href={`/progress/workout/${firstIncompleteToday.cycleMovementId}`}>
               Start Today&apos;s Lift
             </Link>
           </Button>

@@ -1,19 +1,12 @@
+import { CycleMovementEntry } from '@/api/workout/get-cycle-movements-for-week';
 import { WorkoutItem } from './workout-item';
 
-interface Workout {
-  id: number;
-  name: string;
-  topSet: number;
-  completed: boolean;
-  dayOfWeek: number;
-}
-
-export function WorkoutList({ workouts, todayDayOfWeek }: { workouts: Workout[]; todayDayOfWeek: number }) {
+export function WorkoutList({ movements, todayDayOfWeek }: { movements: CycleMovementEntry[]; todayDayOfWeek: number }) {
   return (
     <section>
       <div className="flex flex-col gap-2">
-        {workouts.map((workout) => (
-          <WorkoutItem key={workout.id} workout={workout} todayDayOfWeek={todayDayOfWeek} />
+        {movements.map((movement) => (
+          <WorkoutItem key={movement.cycleMovementId} movement={movement} todayDayOfWeek={todayDayOfWeek} />
         ))}
       </div>
     </section>

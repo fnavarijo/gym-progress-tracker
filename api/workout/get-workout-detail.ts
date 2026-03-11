@@ -4,12 +4,32 @@ import { createClient } from '@/lib/supabase/server';
 // Raw DB row shapes (file-private)
 // ---------------------------------------------------------------------------
 
-interface PlanRoutineRow   { percentage_pr: string; repetitions: number }
-interface WorkoutSetRow    { id: number; set_number: number; scheduled_weight: string; completed_at: string | null; plan_routines: PlanRoutineRow }
-interface MovementRow      { name: string }
-interface PlanRow          { length_weeks: number }
-interface CycleRow         { plans: PlanRow }
-interface CycleMovementRow { cycle_id: number; max_pr: string; movements: MovementRow; cycles: CycleRow }
+interface PlanRoutineRow {
+  percentage_pr: string;
+  repetitions: number;
+}
+interface WorkoutSetRow {
+  id: number;
+  set_number: number;
+  scheduled_weight: string;
+  completed_at: string | null;
+  plan_routines: PlanRoutineRow;
+}
+interface MovementRow {
+  name: string;
+}
+interface PlanRow {
+  length_weeks: number;
+}
+interface CycleRow {
+  plans: PlanRow;
+}
+interface CycleMovementRow {
+  cycle_id: number;
+  max_pr: string;
+  movements: MovementRow;
+  cycles: CycleRow;
+}
 interface WorkoutRow {
   id: number;
   week: number;
@@ -18,7 +38,10 @@ interface WorkoutRow {
   workout_sets: WorkoutSetRow[];
 }
 
-interface WeekWorkoutRow { id: number; completed_at: string | null }
+interface WeekWorkoutRow {
+  id: number;
+  completed_at: string | null;
+}
 
 // ---------------------------------------------------------------------------
 // Public model
@@ -48,26 +71,29 @@ export interface WorkoutDetail {
 // Mapping
 // ---------------------------------------------------------------------------
 
-function toDetail(row: WorkoutRow, weekWorkouts: WeekWorkoutRow[]): WorkoutDetail {
+function toDetail(
+  row: WorkoutRow,
+  weekWorkouts: WeekWorkoutRow[],
+): WorkoutDetail {
   const sets: WorkoutSetDetail[] = [...row.workout_sets]
     .sort((a, b) => a.set_number - b.set_number)
     .map((s) => ({
-      id:          s.id,
-      setNumber:   s.set_number,
-      weight:      parseFloat(s.scheduled_weight),
-      percentage:  Math.round(parseFloat(s.plan_routines.percentage_pr) * 100),
-      reps:        s.plan_routines.repetitions,
+      id: s.id,
+      setNumber: s.set_number,
+      weight: parseFloat(s.scheduled_weight),
+      percentage: Math.round(parseFloat(s.plan_routines.percentage_pr) * 100),
+      reps: s.plan_routines.repetitions,
       completedAt: s.completed_at,
     }));
 
   return {
-    id:              row.id,
-    name:            row.cycle_movements.movements.name,
-    oneRM:           parseFloat(row.cycle_movements.max_pr),
-    week:            row.week,
-    totalWeeks:      row.cycle_movements.cycles.plans.length_weeks,
+    id: row.id,
+    name: row.cycle_movements.movements.name,
+    oneRM: parseFloat(row.cycle_movements.max_pr),
+    week: row.week,
+    totalWeeks: row.cycle_movements.cycles.plans.length_weeks,
     weeklyCompleted: weekWorkouts.filter((w) => w.completed_at !== null).length,
-    weeklyTotal:     weekWorkouts.length,
+    weeklyTotal: weekWorkouts.length,
     sets,
   };
 }
@@ -76,12 +102,17 @@ function toDetail(row: WorkoutRow, weekWorkouts: WeekWorkoutRow[]): WorkoutDetai
 // Query
 // ---------------------------------------------------------------------------
 
-export async function getWorkoutDetail(workoutId: number): Promise<WorkoutDetail | null> {
+export async function getWorkoutDetail(
+  workoutId: number,
+): Promise<WorkoutDetail | null> {
   const supabase = await createClient();
+
+  console.log('WorkoutID', workoutId);
 
   const { data: workoutData, error: workoutError } = await supabase
     .from('workouts')
-    .select(`
+    .select(
+      `
       id,
       week,
       completed_at,
@@ -89,7 +120,7 @@ export async function getWorkoutDetail(workoutId: number): Promise<WorkoutDetail
         cycle_id,
         max_pr,
         movements!inner ( name ),
-        cycles!inner ( plans!inner ( length_weeks ) )
+        cycles!cycle_movements_cycle_id_fkey ( plans!inner ( length_weeks ) )
       ),
       workout_sets (
         id,
@@ -98,7 +129,8 @@ export async function getWorkoutDetail(workoutId: number): Promise<WorkoutDetail
         completed_at,
         plan_routines!inner ( percentage_pr, repetitions )
       )
-    `)
+    `,
+    )
     .eq('id', workoutId)
     .maybeSingle<WorkoutRow>();
 
