@@ -21,7 +21,9 @@ export default function NewCyclePage() {
           <BackButton />
         </nav>
         <div className="px-4 pt-2 pb-4">
-          <h1 className="text-4xl font-bold tracking-tight leading-none">Create New Cycle</h1>
+          <h1 className="text-4xl font-bold tracking-tight leading-none">
+            Create New Cycle
+          </h1>
         </div>
       </div>
       <div className="px-4 flex flex-col gap-8 flex-1">

@@ -13,6 +13,7 @@ import { updateWorkoutSet } from '@/api/workout/update-workout-set';
 import { updateWorkout } from '@/api/workout/update-workout';
 import { updateEvaluationWorkoutSet } from '@/api/workout/update-evaluation-workout-set';
 import { createEvaluationResult } from '@/api/workout/create-evaluation-result';
+import { updateCycleMovementPr } from '@/api/workout/update-cycle-movement-pr';
 
 interface WorkoutDetailProps {
   workout: WorkoutDetail;
@@ -23,19 +24,24 @@ interface WorkoutDetailProps {
 export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: WorkoutDetailProps) {
   const router = useRouter();
 
+  const [localOneRM, setLocalOneRM] = useState(workout.oneRM);
+  const [localSets, setLocalSets] = useState(workout.sets);
+
   const [completedSets, setCompletedSets] = useState<Set<number>>(
     new Set(workout.sets.filter((s) => s.completedAt !== null).map((s) => s.setNumber)),
   );
   const [setWeights, setSetWeights] = useState<Record<number, string>>({});
 
   const [finishing, setFinishing] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [prInput, setPrInput] = useState('');
 
   const allComplete = isEvaluation
-    ? workout.sets.every((s) => {
+    ? localSets.every((s) => {
         const v = setWeights[s.setNumber];
         return v !== undefined && v.trim() !== '' && Number(v) > 0;
       })
-    : completedSets.size === workout.sets.length;
+    : completedSets.size === localSets.length;
 
   const toggleSet = async (set: WorkoutSetDetail) => {
     const wasCompleted = completedSets.has(set.setNumber);
@@ -91,7 +97,91 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
     router.push('/');
   };
 
-  const remaining = workout.sets.length - completedSets.size;
+  const remaining = localSets.length - completedSets.size;
+
+  if (localOneRM === null) {
+    return (
+      <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
+        <div className="bg-gradient-to-b from-primary/8 to-transparent">
+          <div className="px-4 pt-6 pb-4">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+              Workout
+            </p>
+            <h1 className="text-4xl font-bold tracking-tight leading-none">
+              {workout.name}
+            </h1>
+            <div className="mt-4 flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
+                Week {workout.week} of {workout.totalWeeks}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {workout.weeklyCompleted} of {workout.weeklyTotal} lifts done
+              </span>
+            </div>
+          </div>
+        </div>
+        <main className="flex-1 px-4 pt-4">
+          <CardContainer className="gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              No PR Recorded
+            </p>
+            <p className="text-sm text-muted-foreground">Enter your 1RM to continue</p>
+            <div className="flex items-center gap-3 mt-1">
+              <input
+                type="number"
+                inputMode="numeric"
+                min="1"
+                placeholder="0"
+                value={prInput}
+                onChange={(e) => setPrInput(e.target.value)}
+                className={cn(
+                  'w-24 h-10 rounded-lg bg-muted text-right px-3 text-base',
+                  'focus:outline-none focus:ring-2 focus:ring-primary',
+                  '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none',
+                  '[&::-webkit-outer-spin-button]:appearance-none text-foreground',
+                )}
+              />
+              <span className="text-base font-medium text-muted-foreground">lb</span>
+              <Button
+                disabled={!prInput || Number(prInput) <= 0 || updating}
+                onClick={async () => {
+                  setUpdating(true);
+                  const { data, error } = await updateCycleMovementPr(
+                    workout.id,
+                    cycleMovementId,
+                    Number(prInput),
+                  );
+                  if (error) {
+                    toast.error('Could not update PR. Please try again.');
+                    setUpdating(false);
+                    return;
+                  }
+                  const weightMap = new Map(data!.map((s) => [s.setNumber, s.scheduledWeight]));
+                  setLocalSets((prev) =>
+                    prev.map((s) =>
+                      weightMap.has(s.setNumber) ? { ...s, weight: weightMap.get(s.setNumber)! } : s,
+                    ),
+                  );
+                  setLocalOneRM(Number(prInput));
+                  setUpdating(false);
+                }}
+              >
+                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update'}
+              </Button>
+            </div>
+          </CardContainer>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
@@ -124,7 +214,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
       </div>
 
       <main className="flex-1 overflow-y-auto px-4 pb-40 flex flex-col gap-3 mt-4">
-        {!isEvaluation && (
+        {!isEvaluation && localOneRM !== null && (
           <CardContainer className="gap-3">
             <div className="flex justify-between items-start">
               <div>
@@ -133,7 +223,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                 </p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-5xl font-bold tabular-nums leading-none text-foreground">
-                    {workout.oneRM}
+                    {localOneRM}
                   </span>
                   <span className="text-xl font-medium text-muted-foreground">lb</span>
                 </div>
@@ -149,7 +239,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               Evaluation Sets
             </p>
 
-            {workout.sets.map((s) => (
+            {localSets.map((s) => (
               <div
                 key={s.setNumber}
                 className="rounded-xl border bg-card px-4 py-4 flex flex-col gap-3"
@@ -185,7 +275,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               Sets
             </p>
 
-            {workout.sets.map((s) => {
+            {localSets.map((s) => {
               const isComplete = completedSets.has(s.setNumber);
               return (
                 <div

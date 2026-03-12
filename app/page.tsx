@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 import { NoCycleState } from '@/components/app/no-active-cycle';
 import { DashboardGreeting } from '@/components/app/dashboard-greeting';
 import { WorkoutProgress } from '@/components/app/workout-progress';
 import { getUserActiveCycle } from '@/api/cycle/get-user-active-cycle';
+import { hasUserPastCycles } from '@/api/cycle/has-user-past-cycles';
 import { LogoutButton } from '@/components/logout-button';
 
 function WorkoutProgressSkeleton() {
@@ -26,6 +28,9 @@ export default async function HomePage() {
   const activeCycle = await getUserActiveCycle();
 
   if (!activeCycle) {
+    const hasPastCycles = await hasUserPastCycles();
+    if (hasPastCycles) redirect('/cycle/new');
+
     return (
       <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
         <div className="bg-gradient-to-b from-primary/8 to-transparent">

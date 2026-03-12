@@ -27,7 +27,14 @@ export default async function WorkoutDetailPage({
   );
 
   const workout = await getWorkoutDetail(workoutId);
+  console.log(workout);
   if (!workout) notFound();
 
-  return <WorkoutDetailView workout={workout} isEvaluation={isEvaluation} cycleMovementId={cycleMovementId} />;
+  return (
+    <WorkoutDetailView
+      workout={workout}
+      isEvaluation={isEvaluation}
+      cycleMovementId={cycleMovementId}
+    />
+  );
 }

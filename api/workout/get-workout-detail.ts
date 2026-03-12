@@ -26,7 +26,7 @@ interface CycleRow {
 }
 interface CycleMovementRow {
   cycle_id: number;
-  max_pr: string;
+  max_pr: string | null;
   movements: MovementRow;
   cycles: CycleRow;
 }
@@ -59,7 +59,7 @@ export interface WorkoutSetDetail {
 export interface WorkoutDetail {
   id: number;
   name: string;
-  oneRM: number;
+  oneRM: number | null;
   week: number;
   totalWeeks: number;
   weeklyCompleted: number;
@@ -89,7 +89,7 @@ function toDetail(
   return {
     id: row.id,
     name: row.cycle_movements.movements.name,
-    oneRM: parseFloat(row.cycle_movements.max_pr),
+    oneRM: row.cycle_movements.max_pr != null ? parseFloat(row.cycle_movements.max_pr) : null,
     week: row.week,
     totalWeeks: row.cycle_movements.cycles.plans.length_weeks,
     weeklyCompleted: weekWorkouts.filter((w) => w.completed_at !== null).length,
@@ -106,8 +106,6 @@ export async function getWorkoutDetail(
   workoutId: number,
 ): Promise<WorkoutDetail | null> {
   const supabase = await createClient();
-
-  console.log('WorkoutID', workoutId);
 
   const { data: workoutData, error: workoutError } = await supabase
     .from('workouts')
