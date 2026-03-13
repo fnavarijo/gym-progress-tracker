@@ -7,13 +7,14 @@ import { CardContainer } from '@/components/ui/card-container';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Check, Dumbbell, Loader2, Trophy } from 'lucide-react';
+import { ArrowLeft, Check, Dumbbell, Loader2, Pencil, Trophy } from 'lucide-react';
 import type { WorkoutDetail, WorkoutSetDetail } from '@/api/workout/get-workout-detail';
 import { updateWorkoutSet } from '@/api/workout/update-workout-set';
 import { updateWorkout } from '@/api/workout/update-workout';
 import { updateEvaluationWorkoutSet } from '@/api/workout/update-evaluation-workout-set';
 import { createEvaluationResult } from '@/api/workout/create-evaluation-result';
 import { updateCycleMovementPr } from '@/api/workout/update-cycle-movement-pr';
+import { updateWorkoutSetWeight } from '@/api/workout/update-workout-set-weight';
 
 interface WorkoutDetailProps {
   workout: WorkoutDetail;
@@ -31,6 +32,13 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
     new Set(workout.sets.filter((s) => s.completedAt !== null).map((s) => s.setNumber)),
   );
   const [setWeights, setSetWeights] = useState<Record<number, string>>({});
+
+  const [usedWeights, setUsedWeights] = useState<Record<number, number | null>>(
+    Object.fromEntries(workout.sets.map((s) => [s.id, s.usedWeight])),
+  );
+  const [logInputSetId, setLogInputSetId] = useState<number | null>(null);
+  const [logInputValue, setLogInputValue] = useState('');
+  const [savingWeight, setSavingWeight] = useState(false);
 
   const [finishing, setFinishing] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -293,59 +301,151 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
 
             {localSets.map((s) => {
               const isComplete = completedSets.has(s.setNumber);
+              const loggedWeight = usedWeights[s.id];
+              const isLogOpen = logInputSetId === s.id;
+
               return (
                 <div
                   key={s.setNumber}
                   className={cn(
-                    'flex items-center gap-4 rounded-xl border bg-card px-4 py-4 cursor-pointer transition-colors',
-                    isComplete ? 'border-primary bg-primary/5' : 'hover:bg-accent',
+                    'rounded-xl border bg-card transition-colors overflow-hidden',
+                    isComplete ? 'border-primary bg-primary/5' : '',
                   )}
-                  onClick={() => toggleSet(s)}
                 >
+                  {/* Main row — tapping completes the set */}
                   <div
                     className={cn(
-                      'w-1 self-stretch rounded-full shrink-0',
-                      isComplete ? 'bg-primary' : 'bg-muted-foreground/30',
+                      'flex items-center gap-4 px-4 py-4 cursor-pointer',
+                      !isComplete && 'hover:bg-accent',
                     )}
-                  />
-                  <div
-                    className={cn(
-                      'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors',
-                      isComplete
-                        ? 'bg-primary'
-                        : 'border border-muted-foreground/40',
-                    )}
+                    onClick={() => toggleSet(s)}
                   >
-                    {isComplete ? (
-                      <Check className="w-4 h-4 text-primary-foreground" />
-                    ) : (
-                      <span className="text-sm font-medium text-muted-foreground">{s.setNumber}</span>
+                    <div
+                      className={cn(
+                        'w-1 self-stretch rounded-full shrink-0',
+                        isComplete ? 'bg-primary' : 'bg-muted-foreground/30',
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors',
+                        isComplete
+                          ? 'bg-primary'
+                          : 'border border-muted-foreground/40',
+                      )}
+                    >
+                      {isComplete ? (
+                        <Check className="w-4 h-4 text-primary-foreground" />
+                      ) : (
+                        <span className="text-sm font-medium text-muted-foreground">{s.setNumber}</span>
+                      )}
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-baseline gap-2.5">
+                        <div className="flex items-baseline gap-1">
+                          <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.weight}</span>
+                          <span className="text-sm text-muted-foreground">lb</span>
+                        </div>
+                        <span className="text-lg text-muted-foreground/40 font-light">×</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.reps}</span>
+                          <span className="text-sm text-muted-foreground">reps</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-xs text-muted-foreground">{s.percentage}%</span>
+                        <span className="text-xs text-muted-foreground">·</span>
+                        <span className="text-xs text-muted-foreground">{Math.max(0, (s.weight - 45) / 2)} lb/side</span>
+                      </div>
+                    </div>
+
+                    {!isComplete && (
+                      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0">
+                        Tap
+                      </span>
+                    )}
+
+                    {isComplete && loggedWeight != null && !isLogOpen && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLogInputValue(String(loggedWeight));
+                          setLogInputSetId(s.id);
+                        }}
+                        className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shrink-0"
+                      >
+                        {loggedWeight} lb
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+
+                    {isComplete && loggedWeight == null && !isLogOpen && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLogInputValue(String(s.weight));
+                          setLogInputSetId(s.id);
+                        }}
+                        className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0"
+                      >
+                        + Log weight
+                      </button>
                     )}
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-2.5">
-                      <div className="flex items-baseline gap-1">
-                        <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.weight}</span>
-                        <span className="text-sm text-muted-foreground">lb</span>
-                      </div>
-                      <span className="text-lg text-muted-foreground/40 font-light">×</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.reps}</span>
-                        <span className="text-sm text-muted-foreground">reps</span>
+                  {/* Inline weight log input — Proposal B */}
+                  {isLogOpen && (
+                    <div className="px-4 pb-4 flex flex-col gap-3 border-t border-border/50 pt-3">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Actual Weight
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          min="1"
+                          value={logInputValue}
+                          onChange={(e) => setLogInputValue(e.target.value)}
+                          autoFocus
+                          className={cn(
+                            'w-28 h-10 rounded-lg bg-muted text-right px-3 text-base font-bold tabular-nums',
+                            'focus:outline-none focus:ring-2 focus:ring-primary',
+                            '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none',
+                            '[&::-webkit-outer-spin-button]:appearance-none text-foreground',
+                          )}
+                        />
+                        <span className="text-base font-medium text-muted-foreground">lb</span>
+                        <div className="flex items-center gap-2 ml-auto">
+                          <Button
+                            variant="ghost"
+                            className="h-8 px-3 text-xs rounded-lg"
+                            onClick={() => setLogInputSetId(null)}
+                            disabled={savingWeight}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="h-8 px-3 text-xs rounded-lg"
+                            disabled={!logInputValue || Number(logInputValue) <= 0 || savingWeight}
+                            onClick={async () => {
+                              setSavingWeight(true);
+                              const weight = parseFloat(logInputValue);
+                              const { error } = await updateWorkoutSetWeight(s.id, weight);
+                              if (error) {
+                                toast.error('Could not save weight. Please try again.');
+                              } else {
+                                setUsedWeights((prev) => ({ ...prev, [s.id]: weight }));
+                                setLogInputSetId(null);
+                              }
+                              setSavingWeight(false);
+                            }}
+                          >
+                            {savingWeight ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Save'}
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-xs text-muted-foreground">{s.percentage}%</span>
-                      <span className="text-xs text-muted-foreground">·</span>
-                      <span className="text-xs text-muted-foreground">{Math.max(0, (s.weight - 45) / 2)} lb/side</span>
-                    </div>
-                  </div>
-
-                  {!isComplete && (
-                    <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0">
-                      Tap
-                    </span>
                   )}
                 </div>
               );

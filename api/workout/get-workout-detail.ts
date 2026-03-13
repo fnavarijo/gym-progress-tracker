@@ -12,6 +12,7 @@ interface WorkoutSetRow {
   id: number;
   set_number: number;
   scheduled_weight: string;
+  used_weight: string | null;
   completed_at: string | null;
   plan_routines: PlanRoutineRow;
 }
@@ -54,6 +55,7 @@ export interface WorkoutSetDetail {
   percentage: number;
   reps: number;
   completedAt: string | null;
+  usedWeight: number | null;
 }
 
 export interface WorkoutDetail {
@@ -84,6 +86,7 @@ function toDetail(
       percentage: Math.round(parseFloat(s.plan_routines.percentage_pr) * 100),
       reps: s.plan_routines.repetitions,
       completedAt: s.completed_at,
+      usedWeight: s.used_weight != null ? parseFloat(s.used_weight) : null,
     }));
 
   return {
@@ -124,6 +127,7 @@ export async function getWorkoutDetail(
         id,
         set_number,
         scheduled_weight,
+        used_weight,
         completed_at,
         plan_routines!inner ( percentage_pr, repetitions )
       )

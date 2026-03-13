@@ -49,6 +49,7 @@ const workoutRow = {
       id: 10,
       set_number: 2,
       scheduled_weight: '170.00',
+      used_weight: null,
       completed_at: '2026-01-05T10:00:00Z',
       plan_routines: { percentage_pr: '0.7500', repetitions: 5 },
     },
@@ -56,6 +57,7 @@ const workoutRow = {
       id: 11,
       set_number: 1,
       scheduled_weight: '158.00',
+      used_weight: null,
       completed_at: null,
       plan_routines: { percentage_pr: '0.7000', repetitions: 5 },
     },
@@ -63,6 +65,7 @@ const workoutRow = {
       id: 12,
       set_number: 3,
       scheduled_weight: '180.00',
+      used_weight: null,
       completed_at: null,
       plan_routines: { percentage_pr: '0.8000', repetitions: 3 },
     },
@@ -98,9 +101,9 @@ describe('getWorkoutDetail', () => {
       weeklyCompleted: 1,
       weeklyTotal:     3,
       sets: [
-        { id: 11, setNumber: 1, weight: 158, percentage: 70, reps: 5, completedAt: null },
-        { id: 10, setNumber: 2, weight: 170, percentage: 75, reps: 5, completedAt: '2026-01-05T10:00:00Z' },
-        { id: 12, setNumber: 3, weight: 180, percentage: 80, reps: 3, completedAt: null },
+        { id: 11, setNumber: 1, weight: 158, percentage: 70, reps: 5, completedAt: null, usedWeight: null },
+        { id: 10, setNumber: 2, weight: 170, percentage: 75, reps: 5, completedAt: '2026-01-05T10:00:00Z', usedWeight: null },
+        { id: 12, setNumber: 3, weight: 180, percentage: 80, reps: 3, completedAt: null, usedWeight: null },
       ],
     });
   });
