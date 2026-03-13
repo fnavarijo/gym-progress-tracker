@@ -9,7 +9,7 @@ This guide captures the design conventions used across the app's UI. Follow thes
 | Role | Classes | Usage |
 |---|---|---|
 | Eyebrow / section label | `text-xs font-semibold uppercase tracking-widest text-muted-foreground` | Labels above headings or sections (e.g., "ACTIVE CYCLE", "THIS WEEK'S LIFTS") |
-| Page heading | `text-4xl font-bold tracking-tight leading-none` | Primary screen title |
+| Page heading | `text-3xl font-bold tracking-tight leading-tight break-words` | Primary screen title — use `break-words` (never `truncate`) so long user names wrap gracefully |
 | Sub-number | `text-5xl font-bold tabular-nums leading-none` | Large stat numbers (e.g., workout count) |
 | Denominator | `text-xl font-medium text-muted-foreground` | Paired with sub-numbers (e.g., "/ 5") |
 | Card label | `font-semibold` | Primary line in a list card |
@@ -43,12 +43,52 @@ Use slash-opacity for subtle tints rather than creating new colors:
 
 ## Spacing & Layout
 
-- Max content width: `max-w-md mx-auto`
-- Horizontal page padding: `px-4`
+- Max content width: `max-w-md mx-auto` (mobile-only pages)
+- Horizontal page padding: `px-4` mobile / `md:px-6` desktop panel
 - Header top padding: `pt-8 pb-4`
 - Section gap between cards: `mt-6`
 - Card item list gap: `gap-2` (tight list) or `gap-3` (relaxed)
 - Sticky bottom padding: `pb-6` with `pt-10` for gradient fade room
+
+### Desktop two-column layout
+
+Pages that are mobile-first but need a desktop presence use a split layout: a full-height branding panel on the left and the action panel on the right. The mobile layout is unchanged — the left panel is hidden via `hidden md:flex`.
+
+```tsx
+<div className="min-h-screen bg-background flex flex-col md:flex-row">
+  {/* Branding panel — desktop only */}
+  <div className="hidden md:flex flex-1 bg-gradient-to-br from-primary/8 via-primary/5 to-transparent border-r flex-col justify-center px-12 lg:px-16">
+    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+      App Name
+    </p>
+    <h2 className="text-5xl font-bold tracking-tight leading-tight">
+      Headline copy.
+    </h2>
+    <p className="text-muted-foreground mt-4 max-w-sm">Supporting tagline.</p>
+  </div>
+
+  {/* Action panel — full width on mobile, fixed 420px on desktop */}
+  <div className="w-full md:w-[420px] md:shrink-0 flex flex-col min-h-screen md:h-screen md:overflow-y-auto">
+    {/* Header: gradient on mobile only */}
+    <div className="bg-gradient-to-b from-primary/8 to-transparent md:bg-none">
+      {/* greeting / page header */}
+    </div>
+    <main className="flex-1 flex flex-col justify-start px-4 md:px-6 pt-2 pb-24 md:pb-8 md:pt-2">
+      {/* page content */}
+    </main>
+    <div className="sticky md:relative bottom-0 px-4 md:px-6 pb-6 pt-10 flex flex-col gap-2
+      bg-gradient-to-t from-background via-background/95 to-transparent md:bg-none md:pt-0">
+      {/* footer actions */}
+    </div>
+  </div>
+</div>
+```
+
+Key rules:
+- Left panel uses `flex-1` to fill remaining space; right panel is `md:w-[420px] md:shrink-0`
+- `md:h-screen md:overflow-y-auto` on the action panel so `flex-1` stretches correctly
+- Header gradient (`from-primary/8`) is suppressed on desktop (`md:bg-none`) — the left panel gradient provides enough ambient tint
+- Sticky footer becomes `md:relative` on desktop (no need for sticky when the panel scrolls)
 
 ---
 

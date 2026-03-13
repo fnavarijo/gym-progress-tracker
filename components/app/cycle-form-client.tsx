@@ -83,10 +83,9 @@ export function CycleFormClient({
 
       {/* Enter Your PRs section */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
           Enter Your PRs
         </h2>
-        <p className="text-xs text-muted-foreground mb-3">Unit: lb</p>
         <p className="text-xs text-primary bg-primary/10 rounded-lg px-3 py-2 mb-3">
           {hasPastCycle
             ? 'Pre-populated from your last cycle — update any values if your PRs have changed.'
@@ -102,28 +101,33 @@ export function CycleFormClient({
               )}
             >
               <span className="font-semibold">{movement.name}</span>
-              <input
-                type="number"
-                min="0"
-                inputMode="numeric"
-                value={prs[movement.name] === 0 ? '' : prs[movement.name]}
-                placeholder="0"
-                onChange={(e) =>
-                  setPrs((prev) => ({
-                    ...prev,
-                    [movement.name]: Number(e.target.value) || 0,
-                  }))
-                }
-                onFocus={() => setFocusedMovement(movement.name)}
-                onBlur={() => setFocusedMovement(null)}
-                className={cn(
-                  'w-20 h-10 rounded-lg bg-muted text-right px-3 text-base',
-                  'focus:outline-none focus:ring-2 focus:ring-primary',
-                  '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none',
-                  '[&::-webkit-outer-spin-button]:appearance-none',
-                  'text-foreground',
-                )}
-              />
+              <div className={cn(
+                'flex items-center gap-1.5 rounded-lg bg-muted px-3 h-10',
+                focusedMovement === movement.name && 'ring-2 ring-primary',
+              )}>
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={prs[movement.name] === 0 ? '' : prs[movement.name]}
+                  placeholder="0"
+                  onChange={(e) =>
+                    setPrs((prev) => ({
+                      ...prev,
+                      [movement.name]: Number(e.target.value) || 0,
+                    }))
+                  }
+                  onFocus={() => setFocusedMovement(movement.name)}
+                  onBlur={() => setFocusedMovement(null)}
+                  className={cn(
+                    'w-14 bg-transparent text-right text-base focus:outline-none',
+                    '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none',
+                    '[&::-webkit-outer-spin-button]:appearance-none',
+                    'text-foreground',
+                  )}
+                />
+                <span className="text-xs font-semibold text-muted-foreground">lb</span>
+              </div>
             </CardContainer>
           ))}
         </div>
@@ -133,7 +137,7 @@ export function CycleFormClient({
       {allPRsEntered && <WeekPreview movements={movements} prs={prs} />}
 
       {/* Sticky bottom button */}
-      <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
+      <div className="sticky md:relative bottom-0 -mx-4 md:-mx-6 px-4 md:px-6 pb-6 pt-10 md:pt-4 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent md:bg-none">
         {submitError && (
           <p className="text-destructive text-sm mb-2 text-center">
             {submitError}

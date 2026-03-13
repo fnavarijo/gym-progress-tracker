@@ -15,8 +15,8 @@ export async function DashboardGreeting() {
   const firstName = getFirstName(claims as Record<string, unknown>);
 
   return (
-    <header className="px-4 pt-8 pb-4">
-      <h1 className="text-4xl font-bold tracking-tight leading-none truncate">
+    <header className="px-4 md:px-6 pt-8 pb-4">
+      <h1 className="text-3xl font-bold tracking-tight leading-tight break-words">
         Hey, {firstName}!
       </h1>
       <p className="text-muted-foreground mt-2">Ready to build momentum?</p>
