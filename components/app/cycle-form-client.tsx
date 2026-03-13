@@ -15,7 +15,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { WeekPreview } from './week-preview';
 
 interface CycleFormClientProps {
   movements: PlanMovement[];
@@ -41,8 +40,6 @@ export function CycleFormClient({
   const [focusedMovement, setFocusedMovement] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const allPRsEntered = Object.values(prs).every((v) => v > 0);
 
   const formattedDate = startDate.toLocaleDateString('en-US', {
     month: 'long',
@@ -89,7 +86,7 @@ export function CycleFormClient({
         <p className="text-xs text-primary bg-primary/10 rounded-lg px-3 py-2 mb-3">
           {hasPastCycle
             ? 'Pre-populated from your last cycle — update any values if your PRs have changed.'
-            : 'Enter your 1-rep max for each lift. These will be used to calculate your training weights.'}
+            : "Enter your 1-rep max for each lift. These will be used to calculate your training weights. If you don't any, leave it empty."}
         </p>
         <div className="flex flex-col gap-3">
           {movements.map((movement) => (
@@ -101,10 +98,12 @@ export function CycleFormClient({
               )}
             >
               <span className="font-semibold">{movement.name}</span>
-              <div className={cn(
-                'flex items-center gap-1.5 rounded-lg bg-muted px-3 h-10',
-                focusedMovement === movement.name && 'ring-2 ring-primary',
-              )}>
+              <div
+                className={cn(
+                  'flex items-center gap-1.5 rounded-lg bg-muted px-3 h-10',
+                  focusedMovement === movement.name && 'ring-2 ring-primary',
+                )}
+              >
                 <input
                   type="number"
                   min="0"
@@ -126,15 +125,14 @@ export function CycleFormClient({
                     'text-foreground',
                   )}
                 />
-                <span className="text-xs font-semibold text-muted-foreground">lb</span>
+                <span className="text-xs font-semibold text-muted-foreground">
+                  lb
+                </span>
               </div>
             </CardContainer>
           ))}
         </div>
       </section>
-
-      {/* Week 1 Preview — conditionally mounted */}
-      {allPRsEntered && <WeekPreview movements={movements} prs={prs} />}
 
       {/* Sticky bottom button */}
       <div className="sticky md:relative bottom-0 -mx-4 md:-mx-6 px-4 md:px-6 pb-6 pt-10 md:pt-4 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent md:bg-none">

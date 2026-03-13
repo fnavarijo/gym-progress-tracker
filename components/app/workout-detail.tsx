@@ -101,34 +101,40 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
 
   if (localOneRM === null) {
     return (
-      <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
-        <div className="bg-gradient-to-b from-primary/8 to-transparent">
-          <div className="px-4 pt-6 pb-4">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-              Workout
-            </p>
-            <h1 className="text-4xl font-bold tracking-tight leading-none">
-              {workout.name}
-            </h1>
-            <div className="mt-4 flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
-                Week {workout.week} of {workout.totalWeeks}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {workout.weeklyCompleted} of {workout.weeklyTotal} lifts done
-              </span>
+      <div className="min-h-screen bg-background flex flex-col md:flex-row">
+        <div className="hidden md:flex flex-1 bg-gradient-to-br from-primary/8 via-primary/5 to-transparent border-r flex-col justify-center px-12 lg:px-16">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Momentum</p>
+          <h2 className="text-5xl font-bold tracking-tight leading-tight">{workout.name}</h2>
+          <p className="text-muted-foreground mt-4 max-w-sm">Log your sets, track your progress, and build strength week by week.</p>
+        </div>
+        <div className="w-full md:w-[420px] md:shrink-0 flex flex-col min-h-screen md:h-screen md:overflow-y-auto">
+          <div className="bg-gradient-to-b from-primary/8 to-transparent md:bg-none">
+            <div className="px-4 md:px-6 pt-6 pb-4">
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </button>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                Workout
+              </p>
+              <h1 className="text-3xl font-bold tracking-tight leading-tight break-words">
+                {workout.name}
+              </h1>
+              <div className="mt-4 flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
+                  Week {workout.week} of {workout.totalWeeks}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {workout.weeklyCompleted} of {workout.weeklyTotal} lifts done
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-        <main className="flex-1 px-4 pt-4">
+          <main className="flex-1 px-4 md:px-6 pt-4">
           <CardContainer className="gap-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               No PR Recorded
@@ -179,14 +185,24 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
             </div>
           </CardContainer>
         </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
-      <div className="bg-gradient-to-b from-primary/8 to-transparent">
-        <div className="px-4 pt-6 pb-4">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Branding panel — desktop only */}
+      <div className="hidden md:flex flex-1 bg-gradient-to-br from-primary/8 via-primary/5 to-transparent border-r flex-col justify-center px-12 lg:px-16">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Momentum</p>
+        <h2 className="text-5xl font-bold tracking-tight leading-tight">{workout.name}</h2>
+        <p className="text-muted-foreground mt-4 max-w-sm">Log your sets, track your progress, and build strength week by week.</p>
+      </div>
+
+      {/* Action panel */}
+      <div className="w-full md:w-[420px] md:shrink-0 flex flex-col min-h-screen md:h-screen md:overflow-y-auto">
+      <div className="bg-gradient-to-b from-primary/8 to-transparent md:bg-none">
+        <div className="px-4 md:px-6 pt-6 pb-4">
           <button
             onClick={() => router.back()}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
@@ -198,7 +214,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
             Workout
           </p>
-          <h1 className="text-4xl font-bold tracking-tight leading-none">
+          <h1 className="text-3xl font-bold tracking-tight leading-tight break-words">
             {workout.name}
           </h1>
           <div className="mt-4 flex items-center gap-3">
@@ -213,7 +229,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         </div>
       </div>
 
-      <main className="flex-1 overflow-y-auto px-4 pb-40 flex flex-col gap-3 mt-4">
+      <main className="flex-1 overflow-y-auto px-4 md:px-6 pb-24 md:pb-8 flex flex-col gap-3 mt-4">
         {!isEvaluation && localOneRM !== null && (
           <CardContainer className="gap-3">
             <div className="flex justify-between items-start">
@@ -308,18 +324,21 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                   </div>
 
                   <div className="flex-1">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold tabular-nums">{s.weight}</span>
-                      <span className="text-base text-muted-foreground">lb</span>
+                    <div className="flex items-baseline gap-2.5">
+                      <div className="flex items-baseline gap-1">
+                        <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.weight}</span>
+                        <span className="text-sm text-muted-foreground">lb</span>
+                      </div>
+                      <span className="text-lg text-muted-foreground/40 font-light">×</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.reps}</span>
+                        <span className="text-sm text-muted-foreground">reps</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="flex items-center gap-1.5 mt-1">
                       <span className="text-xs text-muted-foreground">{s.percentage}%</span>
-                      <span className="text-xs text-muted-foreground">•</span>
-                      <span className="text-xs font-semibold text-foreground">x{s.reps} reps</span>
-                      <span className="text-xs text-muted-foreground">•</span>
-                      <span className="text-xs text-muted-foreground">
-                        {Math.max(0, (s.weight - 45) / 2)} lb/side
-                      </span>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <span className="text-xs text-muted-foreground">{Math.max(0, (s.weight - 45) / 2)} lb/side</span>
                     </div>
                   </div>
 
@@ -335,7 +354,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         )}
       </main>
 
-      <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
+      <div className="sticky md:relative bottom-0 px-4 md:px-6 pb-6 pt-10 md:pt-4 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent md:bg-none">
         <Button
           disabled={!allComplete || finishing}
           className="w-full rounded-xl h-14 text-base font-semibold"
@@ -355,6 +374,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
             {remaining} set{remaining !== 1 ? 's' : ''} remaining
           </p>
         )}
+      </div>
       </div>
     </div>
   );
