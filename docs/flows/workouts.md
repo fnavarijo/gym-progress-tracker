@@ -30,3 +30,10 @@ On clicking "Save PR and Finish" 2 actions will happen:
 - The workout_sets will be updated: The set should be marked as completed and the used_weight column should be set with the value entered by the user.
 - A new entry on evaluation_results will be added. This table have the columns: id, cycle_movement_id, used_weight, evaluated_at (the time of submission). \*used weight is the value of the last repetition.
 - Workout needs to be marked as completed.
+
+### Updating workout sets
+
+There are 2 functions that update the scheduled weight after a cycle is created:
+
+- update_cycle_movement_pr: Used when the user forgot to enter the PR
+- get_or_create_workout: When getting the workout (this create the workout sets if there is none)

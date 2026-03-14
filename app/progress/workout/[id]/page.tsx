@@ -17,17 +17,17 @@ export default async function WorkoutDetailPage({
   if (!Number.isInteger(cycleMovementId) || cycleMovementId <= 0) {
     notFound();
   }
-
+  console.log('Here2');
   const cycle = await getUserActiveCycle();
   if (!cycle) notFound();
 
+  console.log('Here1');
   const { workoutId, isEvaluation } = await getOrCreateWorkout(
     cycleMovementId,
     cycle.currentWeek,
   );
-
+  console.log('Here3');
   const workout = await getWorkoutDetail(workoutId);
-  console.log(workout);
   if (!workout) notFound();
 
   return (

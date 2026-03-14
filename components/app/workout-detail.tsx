@@ -142,7 +142,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               </div>
             </div>
           </div>
-          <main className="flex-1 px-4 md:px-6 pt-4">
+          <main className="flex-1 px-4 md:px-6 pt-4 flex flex-col gap-3">
           <CardContainer className="gap-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               No PR Recorded
@@ -191,6 +191,18 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                 {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update'}
               </Button>
             </div>
+          </CardContainer>
+          <CardContainer className="gap-2 bg-muted/50 border-dashed">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Don&apos;t know your PR?
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Do a quick warm-up round:{' '}
+              <span className="font-semibold text-foreground">1×80%</span>,{' '}
+              <span className="font-semibold text-foreground">1×90%</span>, and{' '}
+              <span className="font-semibold text-foreground">1×100%</span>.
+              Register the weight you lifted at your 100% effort.
+            </p>
           </CardContainer>
         </main>
         </div>
