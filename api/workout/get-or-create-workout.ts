@@ -32,6 +32,26 @@ export interface GetOrCreateWorkoutResult {
 }
 
 // ---------------------------------------------------------------------------
+// Mapper
+// ---------------------------------------------------------------------------
+
+function toWorkoutResult(rows: GetOrCreateWorkoutRow[]): GetOrCreateWorkoutResult {
+  return {
+    workoutId: rows[0].out_workout_id,
+    isEvaluation: rows[0].out_is_evaluation,
+    sets: rows.map((r) => ({
+      planRoutineId: r.out_plan_routine_id,
+      setNumber: r.out_set_number,
+      scheduledWeight:
+        r.out_scheduled_weight !== null
+          ? parseFloat(r.out_scheduled_weight)
+          : null,
+      completedAt: r.out_completed_at,
+    })),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Query
 // ---------------------------------------------------------------------------
 
@@ -46,23 +66,7 @@ export async function getOrCreateWorkout(
     p_week: week,
   });
 
-  console.log('Error', error);
-
   if (error) throw error;
 
-  const rows = data as GetOrCreateWorkoutRow[];
-
-  return {
-    workoutId: rows[0].out_workout_id,
-    isEvaluation: rows[0].out_is_evaluation,
-    sets: rows.map((r) => ({
-      planRoutineId: r.out_plan_routine_id,
-      setNumber: r.out_set_number,
-      scheduledWeight:
-        r.out_scheduled_weight !== null
-          ? parseFloat(r.out_scheduled_weight)
-          : null,
-      completedAt: r.out_completed_at,
-    })),
-  };
+  return toWorkoutResult(data as GetOrCreateWorkoutRow[]);
 }

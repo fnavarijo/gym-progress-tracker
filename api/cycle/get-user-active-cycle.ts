@@ -16,6 +16,7 @@ interface CycleRow {
 }
 
 /** App-level model — all properties in camelCase. */
+// TODO: Refactor this to a .model.ts file. This are domain models
 export interface Cycle {
   id: number;
   userId: string;
@@ -32,16 +33,16 @@ export interface Cycle {
 
 function toCycle(row: CycleRow): Cycle {
   return {
-    id:           row.id,
-    userId:       row.user_id,
-    planId:       row.plan_id,
-    startDate:    row.start_date,
-    status:       row.status,
-    createdAt:    row.created_at,
-    updatedAt:    row.updated_at,
-    endDate:      row.end_date,
-    currentWeek:  row.current_week,
-    totalWeeks:   row.total_weeks,
+    id: row.id,
+    userId: row.user_id,
+    planId: row.plan_id,
+    startDate: row.start_date,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    endDate: row.end_date,
+    currentWeek: row.current_week,
+    totalWeeks: row.total_weeks,
     daysRemaining: row.days_remaining,
   };
 }
@@ -49,7 +50,9 @@ function toCycle(row: CycleRow): Cycle {
 export async function getUserActiveCycle(): Promise<Cycle | null> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
   const { data, error } = await supabase

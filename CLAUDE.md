@@ -77,6 +77,10 @@ Dark/light mode via `next-themes`. All colors are CSS variables (HSL format) def
 
 `@/*` maps to the project root. Use `@/components`, `@/lib`, etc. for imports.
 
+## Coding Conventions
+
+**Variable naming:** Use full, descriptive variable names — never acronyms. Prefer `cycleMovement` over `cm`, `planMovement` over `pm`, `workout` over `w`, etc.
+
 ## Testing
 
 **Framework:** Jest + `@testing-library/react` (configured via `next/jest`). Test files live in `__tests__/` subdirectories next to the module they test and use the `.spec.ts` extension.

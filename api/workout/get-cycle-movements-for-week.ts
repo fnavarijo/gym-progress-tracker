@@ -18,7 +18,6 @@ interface PlanMovementRow {
 
 interface WorkoutRow {
   completed_at: string | null;
-  week: number;
 }
 
 interface CycleMovementRow {
@@ -43,8 +42,9 @@ export async function getCycleMovementsForWeek(
       .eq('plan_routines.week', week),
     supabase
       .from('cycle_movements')
-      .select('id, movement_id, max_pr, workouts(completed_at, week)')
-      .eq('cycle_id', cycleId),
+      .select('id, movement_id, max_pr, workouts(completed_at)')
+      .eq('cycle_id', cycleId)
+      .eq('workouts.week', week),
   ]);
 
   if (queryA.error) throw queryA.error;
@@ -54,19 +54,18 @@ export async function getCycleMovementsForWeek(
   const cycleMovements = queryB.data as unknown as CycleMovementRow[];
 
   const cycleByMovementId = new Map(
-    cycleMovements.map((cm) => [cm.movement_id, cm]),
+    cycleMovements.map((cycleMovement) => [cycleMovement.movement_id, cycleMovement]),
   );
 
-  return planMovements.map((pm) => {
-    const cm = cycleByMovementId.get(pm.movement_id);
-    const workoutsForWeek = cm?.workouts.filter((w) => w.week === week) ?? [];
-    const completed = workoutsForWeek.some((w) => w.completed_at !== null);
+  return planMovements.map((planMovement) => {
+    const cycleMovement = cycleByMovementId.get(planMovement.movement_id);
+    const completed = cycleMovement?.workouts.some((workout) => workout.completed_at !== null) ?? false;
 
     return {
-      cycleMovementId: cm?.id ?? 0,
-      name:            pm.movements.name,
-      maxPr:           cm?.max_pr != null ? parseFloat(cm.max_pr) : null,
-      dayOfWeek:       pm.day_of_week,
+      cycleMovementId: cycleMovement?.id ?? 0,
+      name:            planMovement.movements.name,
+      maxPr:           cycleMovement?.max_pr != null ? parseFloat(cycleMovement.max_pr) : null,
+      dayOfWeek:       planMovement.day_of_week,
       completed,
     };
   });

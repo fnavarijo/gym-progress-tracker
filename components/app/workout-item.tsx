@@ -55,7 +55,7 @@ export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovem
   );
 
   if (!locked && !completed) {
-    return <Link href={`/progress/workout/${cycleMovementId}`}>{content}</Link>;
+    return <Link href={`/workout/movement/${cycleMovementId}`}>{content}</Link>;
   }
 
   return content;

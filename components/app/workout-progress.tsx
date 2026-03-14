@@ -52,7 +52,7 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
       <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
         {firstIncompleteToday ? (
           <Button asChild className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
-            <Link href={`/progress/workout/${firstIncompleteToday.cycleMovementId}`}>
+            <Link href={`/workout/movement/${firstIncompleteToday.cycleMovementId}`}>
               Start Today&apos;s Lift
             </Link>
           </Button>
