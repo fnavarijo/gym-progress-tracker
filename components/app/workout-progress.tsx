@@ -23,10 +23,9 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
     total: movements.length,
   };
 
-  const todayWorkouts           = movements.filter((m) => m.dayOfWeek === todayDayOfWeek);
-  const availableWorkouts       = movements.filter((m) => m.dayOfWeek === 0 || m.dayOfWeek <= todayDayOfWeek);
-  const firstIncompleteToday    = availableWorkouts.find((m) => !m.completed);
-  const todayAllDone            = todayWorkouts.length > 0 && todayWorkouts.every((m) => m.completed);
+  const todayWorkouts        = movements.filter((m) => m.dayOfWeek === todayDayOfWeek);
+  const firstIncompleteToday = todayWorkouts.find((m) => !m.completed);
+  const todayAllDone         = todayWorkouts.length > 0 && todayWorkouts.every((m) => m.completed);
 
   const cycleInfo = {
     currentWeek: cycle.currentWeek,
