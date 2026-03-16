@@ -1,7 +1,10 @@
-import Link from 'next/link';
+'use client';
+
 import { CheckCircle2, ChevronRight, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CycleMovementEntry } from '@/api/workout/get-cycle-movements-for-week';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 const DAY_ABBR = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -9,6 +12,7 @@ export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovem
   const { cycleMovementId, name, maxPr, completed, dayOfWeek } = movement;
   const dayLabel = DAY_ABBR[dayOfWeek] ?? '';
   const locked   = !completed && dayOfWeek !== 0 && dayOfWeek > todayDayOfWeek;
+  const t = useTranslations('Workout');
 
   const content = (
     <div
@@ -31,7 +35,7 @@ export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovem
         </p>
         <div className="flex items-center gap-2 mt-0.5">
           <p className="text-xs text-muted-foreground">
-            Max PR: <span className="font-semibold text-foreground">{maxPr !== null ? `${maxPr} lb` : '—'}</span>
+            {maxPr !== null ? t('maxPr', { value: `${maxPr} lb` }) : t('maxPrEmpty')}
           </p>
           {dayLabel && (
             <>

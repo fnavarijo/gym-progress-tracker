@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import { CycleWorkout } from '@/api/workout/get-cycle-workouts';
 import { cn } from '@/lib/utils';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 interface Props {
   workouts: CycleWorkout[];
@@ -20,22 +21,24 @@ function cellClasses(workout: CycleWorkout | undefined, week: number, currentWee
   return 'bg-muted-foreground/20';
 }
 
-export function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
+export async function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
+  const t = await getTranslations('Cycle.summary');
+
   // Unique movement names in order of first appearance
   const movements: string[] = [];
   const seen = new Set<string>();
-  for (const w of workouts) {
-    if (!seen.has(w.name)) {
-      seen.add(w.name);
-      movements.push(w.name);
+  for (const workout of workouts) {
+    if (!seen.has(workout.name)) {
+      seen.add(workout.name);
+      movements.push(workout.name);
     }
   }
 
   // Lookup: movement name → week → CycleWorkout
   const lookup = new Map<string, Map<number, CycleWorkout>>();
-  for (const w of workouts) {
-    if (!lookup.has(w.name)) lookup.set(w.name, new Map());
-    lookup.get(w.name)!.set(w.week, w);
+  for (const workout of workouts) {
+    if (!lookup.has(workout.name)) lookup.set(workout.name, new Map());
+    lookup.get(workout.name)!.set(workout.week, workout);
   }
 
   const weeks = Array.from({ length: totalWeeks }, (_, i) => i + 1);
@@ -43,7 +46,7 @@ export function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
   return (
     <div className="px-4 mt-6">
       <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-        Consistency Heatmap
+        {t('consistencyHeatmap')}
       </h2>
       <div className="bg-card border rounded-xl p-4 overflow-x-auto">
         <table className="w-full border-collapse">
@@ -51,12 +54,12 @@ export function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
             <tr>
               {/* empty corner cell */}
               <th className="w-24 shrink-0" />
-              {weeks.map((w) => (
+              {weeks.map((week) => (
                 <th
-                  key={w}
+                  key={week}
                   className="text-xs text-muted-foreground font-medium pb-2 text-center w-8"
                 >
-                  W{w}
+                  W{week}
                 </th>
               ))}
             </tr>
@@ -101,10 +104,10 @@ export function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
 
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-4 pt-3 border-t">
-          <LegendItem color="bg-primary" label="Done" />
-          <LegendItem color="bg-primary/20 border border-primary/40" label="In progress" />
-          <LegendItem color="bg-muted-foreground/20" label="Missed" />
-          <LegendItem color="bg-muted/50" label="Upcoming" />
+          <LegendItem color="bg-primary" label={t('legendDone')} />
+          <LegendItem color="bg-primary/20 border border-primary/40" label={t('legendInProgress')} />
+          <LegendItem color="bg-muted-foreground/20" label={t('legendMissed')} />
+          <LegendItem color="bg-muted/50" label={t('legendUpcoming')} />
         </div>
       </div>
     </div>

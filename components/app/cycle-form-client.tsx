@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { CalendarDays } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { createCycle } from '@/api/cycle/create-cycle';
 import { PlanMovement } from '@/api/plan/get-plan-movements';
@@ -28,10 +29,11 @@ export function CycleFormClient({
   hasPastCycle,
 }: CycleFormClientProps) {
   const router = useRouter();
+  const t = useTranslations('CycleForm');
 
   const [prs, setPrs] = useState<Record<string, number>>(
     Object.fromEntries(
-      movements.map((m) => [m.name, initialPrs?.[m.name] ?? 0]),
+      movements.map((movement) => [movement.name, initialPrs?.[movement.name] ?? 0]),
     ),
   );
 
@@ -52,7 +54,7 @@ export function CycleFormClient({
       {/* Start Date section */}
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Start Date
+          {t('startDate')}
         </h2>
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
@@ -81,12 +83,10 @@ export function CycleFormClient({
       {/* Enter Your PRs section */}
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Enter Your PRs
+          {t('enterYourPrs')}
         </h2>
         <p className="text-xs text-primary bg-primary/10 rounded-lg px-3 py-2 mb-3">
-          {hasPastCycle
-            ? 'Pre-populated from your last cycle — update any values if your PRs have changed.'
-            : "Enter your 1-rep max for each lift. These will be used to calculate your training weights. If you don't any, leave it empty."}
+          {hasPastCycle ? t('prHintReturning') : t('prHintNew')}
         </p>
         <div className="flex flex-col gap-3">
           {movements.map((movement) => (
@@ -151,8 +151,8 @@ export function CycleFormClient({
             const date = startDate.toLocaleDateString('sv-SE');
             const prsByMovementId = Object.fromEntries(
               movements
-                .filter((m) => prs[m.name] > 0)
-                .map((m) => [m.id, prs[m.name]]),
+                .filter((movement) => prs[movement.name] > 0)
+                .map((movement) => [movement.id, prs[movement.name]]),
             ) as Record<number, number>;
 
             const { error } = await createCycle({ date, prs: prsByMovementId });
@@ -166,7 +166,7 @@ export function CycleFormClient({
             router.push('/');
           }}
         >
-          {submitting ? 'Creating…' : 'Start Cycle'}
+          {submitting ? t('creating') : t('startCycle')}
         </Button>
       </div>
     </>

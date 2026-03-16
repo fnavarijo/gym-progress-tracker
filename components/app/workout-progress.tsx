@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Cycle } from '@/api/cycle/get-user-active-cycle';
 import { getCycleMovementsForWeek } from '@/api/workout/get-cycle-movements-for-week';
 import { CycleProgressHeader } from '@/components/app/cycle-progress-header';
@@ -6,6 +5,9 @@ import { WeekProgressCard } from '@/components/app/week-progress-card';
 import { WorkoutList } from '@/components/app/workout-list';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from '@/components/logout-button';
+import { LocaleSwitcher } from '@/components/app/locale-switcher';
+import { Link } from '@/i18n/navigation';
+import { getTranslations } from 'next-intl/server';
 
 interface WorkoutProgressProps {
   cycle: Cycle;
@@ -13,6 +15,7 @@ interface WorkoutProgressProps {
 
 export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
   const movements = await getCycleMovementsForWeek(cycle.id, cycle.planId, cycle.currentWeek);
+  const t = await getTranslations('CycleProgress');
 
   // ISO weekday: 1 = Monday … 7 = Sunday
   const jsDay = new Date().getDay();
@@ -44,7 +47,7 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
         </section>
         <section className="mt-6">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-            This Week&apos;s Lifts
+            {t('thisWeeksLifts')}
           </h2>
           <WorkoutList movements={movements} todayDayOfWeek={todayDayOfWeek} />
         </section>
@@ -53,12 +56,12 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
         {firstIncompleteToday ? (
           <Button asChild className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
             <Link href={`/workout/movement/${firstIncompleteToday.cycleMovementId}`}>
-              Start Today&apos;s Lift
+              {t('startTodaysLift')}
             </Link>
           </Button>
         ) : (
           <Button disabled className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
-            {todayAllDone ? "Today's Lift Done" : 'No Lift Scheduled Today'}
+            {todayAllDone ? t('todaysLiftDone') : t('noLiftScheduled')}
           </Button>
         )}
         <Button
@@ -67,9 +70,12 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
           className="w-full rounded-xl h-11 text-muted-foreground"
           size="lg"
         >
-          <Link href="/cycle/summary">View Full Cycle</Link>
+          <Link href="/cycle/summary">{t('viewFullCycle')}</Link>
         </Button>
         <LogoutButton />
+        <div className="flex justify-center">
+          <LocaleSwitcher />
+        </div>
       </div>
     </div>
   );

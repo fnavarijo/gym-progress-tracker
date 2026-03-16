@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { CardContainer } from '@/components/ui/card-container';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { updateEvaluationWorkoutSet } from '@/api/workout/update-evaluation-work
 import { createEvaluationResult } from '@/api/workout/create-evaluation-result';
 import { updateCycleMovementPr } from '@/api/workout/update-cycle-movement-pr';
 import { updateWorkoutSetWeight } from '@/api/workout/update-workout-set-weight';
+import { useTranslations } from 'next-intl';
 
 interface WorkoutDetailProps {
   workout: WorkoutDetail;
@@ -24,6 +25,8 @@ interface WorkoutDetailProps {
 
 export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: WorkoutDetailProps) {
   const router = useRouter();
+  const t = useTranslations('Workout');
+  const tCommon = useTranslations('Common');
 
   const [localOneRM, setLocalOneRM] = useState(workout.oneRM);
   const [localSets, setLocalSets] = useState(workout.sets);
@@ -56,7 +59,11 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
 
     setCompletedSets((prev) => {
       const next = new Set(prev);
-      wasCompleted ? next.delete(set.setNumber) : next.add(set.setNumber);
+      if (wasCompleted) {
+        next.delete(set.setNumber);
+      } else {
+        next.add(set.setNumber);
+      }
       return next;
     });
 
@@ -65,10 +72,14 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
     if (error) {
       setCompletedSets((prev) => {
         const next = new Set(prev);
-        wasCompleted ? next.add(set.setNumber) : next.delete(set.setNumber);
+        if (wasCompleted) {
+          next.add(set.setNumber);
+        } else {
+          next.delete(set.setNumber);
+        }
         return next;
       });
-      toast.error('Could not save. Please try again.');
+      toast.error(t('couldNotSave'));
     }
   };
 
@@ -81,7 +92,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         const { error } = await updateEvaluationWorkoutSet(s.id, weight);
         if (error) {
           setFinishing(false);
-          toast.error('Could not save sets. Please try again.');
+          toast.error(t('couldNotSaveSets'));
           return;
         }
       }
@@ -91,7 +102,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
       const { error: evalError } = await createEvaluationResult(cycleMovementId, lastWeight);
       if (evalError) {
         setFinishing(false);
-        toast.error('Could not save evaluation result. Please try again.');
+        toast.error(t('couldNotSaveEval'));
         return;
       }
     }
@@ -99,7 +110,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
     const { error } = await updateWorkout(workout.id);
     if (error) {
       setFinishing(false);
-      toast.error('Could not finish workout. Please try again.');
+      toast.error(t('couldNotFinish'));
       return;
     }
     router.push('/');
@@ -113,7 +124,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         <div className="hidden md:flex flex-1 bg-gradient-to-br from-primary/8 via-primary/5 to-transparent border-r flex-col justify-center px-12 lg:px-16">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Momentum</p>
           <h2 className="text-5xl font-bold tracking-tight leading-tight">{workout.name}</h2>
-          <p className="text-muted-foreground mt-4 max-w-sm">Log your sets, track your progress, and build strength week by week.</p>
+          <p className="text-muted-foreground mt-4 max-w-sm">{t('logAndBuild')}</p>
         </div>
         <div className="w-full md:w-[420px] md:shrink-0 flex flex-col min-h-screen md:h-screen md:overflow-y-auto">
           <div className="bg-gradient-to-b from-primary/8 to-transparent md:bg-none">
@@ -123,10 +134,10 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                 className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back
+                {tCommon('back')}
               </button>
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                Workout
+                {t('workoutLabel')}
               </p>
               <h1 className="text-3xl font-bold tracking-tight leading-tight break-words">
                 {workout.name}
@@ -134,10 +145,10 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               <div className="mt-4 flex items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
-                  Week {workout.week} of {workout.totalWeeks}
+                  {t('weekOf', { week: workout.week, total: workout.totalWeeks })}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {workout.weeklyCompleted} of {workout.weeklyTotal} lifts done
+                  {t('liftsDone', { completed: workout.weeklyCompleted, total: workout.weeklyTotal })}
                 </span>
               </div>
             </div>
@@ -145,9 +156,9 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
           <main className="flex-1 px-4 md:px-6 pt-4 flex flex-col gap-3">
           <CardContainer className="gap-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              No PR Recorded
+              {t('noPrRecorded')}
             </p>
-            <p className="text-sm text-muted-foreground">Enter your 1RM to continue</p>
+            <p className="text-sm text-muted-foreground">{t('enterOneRm')}</p>
             <div className="flex items-center gap-3 mt-1">
               <input
                 type="number"
@@ -163,7 +174,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                   '[&::-webkit-outer-spin-button]:appearance-none text-foreground',
                 )}
               />
-              <span className="text-base font-medium text-muted-foreground">lb</span>
+              <span className="text-base font-medium text-muted-foreground">{t('lb')}</span>
               <Button
                 disabled={!prInput || Number(prInput) <= 0 || updating}
                 onClick={async () => {
@@ -174,7 +185,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                     Number(prInput),
                   );
                   if (error) {
-                    toast.error('Could not update PR. Please try again.');
+                    toast.error(t('couldNotUpdatePr'));
                     setUpdating(false);
                     return;
                   }
@@ -188,13 +199,13 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                   setUpdating(false);
                 }}
               >
-                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update'}
+                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : tCommon('update')}
               </Button>
             </div>
           </CardContainer>
           <CardContainer className="gap-2 bg-muted/50 border-dashed">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Don&apos;t know your PR?
+              {t('dontKnowPr')}
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Do a quick warm-up round:{' '}
@@ -216,7 +227,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
       <div className="hidden md:flex flex-1 bg-gradient-to-br from-primary/8 via-primary/5 to-transparent border-r flex-col justify-center px-12 lg:px-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Momentum</p>
         <h2 className="text-5xl font-bold tracking-tight leading-tight">{workout.name}</h2>
-        <p className="text-muted-foreground mt-4 max-w-sm">Log your sets, track your progress, and build strength week by week.</p>
+        <p className="text-muted-foreground mt-4 max-w-sm">{t('logAndBuild')}</p>
       </div>
 
       {/* Action panel */}
@@ -228,11 +239,11 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {tCommon('back')}
           </button>
 
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-            Workout
+            {t('workoutLabel')}
           </p>
           <h1 className="text-3xl font-bold tracking-tight leading-tight break-words">
             {workout.name}
@@ -240,10 +251,10 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
           <div className="mt-4 flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
-              Week {workout.week} of {workout.totalWeeks}
+              {t('weekOf', { week: workout.week, total: workout.totalWeeks })}
             </span>
             <span className="text-sm text-muted-foreground">
-              {workout.weeklyCompleted} of {workout.weeklyTotal} lifts done
+              {t('liftsDone', { completed: workout.weeklyCompleted, total: workout.weeklyTotal })}
             </span>
           </div>
         </div>
@@ -261,7 +272,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                   <span className="text-5xl font-bold tabular-nums leading-none text-foreground">
                     {localOneRM}
                   </span>
-                  <span className="text-xl font-medium text-muted-foreground">lb</span>
+                  <span className="text-xl font-medium text-muted-foreground">{t('lb')}</span>
                 </div>
               </div>
               <Dumbbell className="w-5 h-5 text-muted-foreground mt-1" />
@@ -272,7 +283,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         {isEvaluation ? (
           <>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
-              Evaluation Sets
+              {t('evaluationSets')}
             </p>
 
             {localSets.map((s) => (
@@ -282,7 +293,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    Set {s.setNumber}
+                    {t('set', { number: s.setNumber })}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {s.percentage}% · ×{s.reps} reps
@@ -300,7 +311,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                     }
                     className="text-2xl font-bold tabular-nums h-12 rounded-xl text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
-                  <span className="text-base font-medium text-muted-foreground shrink-0">lb</span>
+                  <span className="text-base font-medium text-muted-foreground shrink-0">{t('lb')}</span>
                 </div>
               </div>
             ))}
@@ -308,7 +319,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         ) : (
           <>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
-              Sets
+              {t('sets')}
             </p>
 
             {localSets.map((s) => {
@@ -357,7 +368,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                       <div className="flex items-baseline gap-2.5">
                         <div className="flex items-baseline gap-1">
                           <span className={cn('text-3xl font-bold tabular-nums', isComplete && 'opacity-50')}>{s.weight}</span>
-                          <span className="text-sm text-muted-foreground">lb</span>
+                          <span className="text-sm text-muted-foreground">{t('lb')}</span>
                         </div>
                         <span className="text-lg text-muted-foreground/40 font-light">×</span>
                         <div className="flex items-baseline gap-1">
@@ -368,13 +379,13 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                       <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-xs text-muted-foreground">{s.percentage}%</span>
                         <span className="text-xs text-muted-foreground">·</span>
-                        <span className="text-xs text-muted-foreground">{Math.max(0, (s.weight - 45) / 2)} lb/side</span>
+                        <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
                       </div>
                     </div>
 
                     {!isComplete && (
                       <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0">
-                        Tap
+                        {t('tap')}
                       </span>
                     )}
 
@@ -387,7 +398,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                         }}
                         className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shrink-0"
                       >
-                        {loggedWeight} lb
+                        {loggedWeight} {t('lb')}
                         <Pencil className="w-3 h-3" />
                       </button>
                     )}
@@ -401,16 +412,16 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                         }}
                         className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground shrink-0"
                       >
-                        + Log weight
+                        {t('logWeight')}
                       </button>
                     )}
                   </div>
 
-                  {/* Inline weight log input — Proposal B */}
+                  {/* Inline weight log input */}
                   {isLogOpen && (
                     <div className="px-4 pb-4 flex flex-col gap-3 border-t border-border/50 pt-3">
                       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Actual Weight
+                        {t('actualWeight')}
                       </p>
                       <div className="flex items-center gap-3">
                         <input
@@ -427,7 +438,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                             '[&::-webkit-outer-spin-button]:appearance-none text-foreground',
                           )}
                         />
-                        <span className="text-base font-medium text-muted-foreground">lb</span>
+                        <span className="text-base font-medium text-muted-foreground">{t('lb')}</span>
                         <div className="flex items-center gap-2 ml-auto">
                           <Button
                             variant="ghost"
@@ -435,7 +446,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                             onClick={() => setLogInputSetId(null)}
                             disabled={savingWeight}
                           >
-                            Cancel
+                            {tCommon('cancel')}
                           </Button>
                           <Button
                             className="h-8 px-3 text-xs rounded-lg"
@@ -445,7 +456,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                               const weight = parseFloat(logInputValue);
                               const { error } = await updateWorkoutSetWeight(s.id, weight);
                               if (error) {
-                                toast.error('Could not save weight. Please try again.');
+                                toast.error(t('couldNotSaveWeight'));
                               } else {
                                 setUsedWeights((prev) => ({ ...prev, [s.id]: weight }));
                                 setLogInputSetId(null);
@@ -453,7 +464,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                               setSavingWeight(false);
                             }}
                           >
-                            {savingWeight ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Save'}
+                            {savingWeight ? <Loader2 className="w-3 h-3 animate-spin" /> : tCommon('save')}
                           </Button>
                         </div>
                       </div>
@@ -479,11 +490,11 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
           ) : (
             <Check className="w-5 h-5 mr-2" />
           )}
-          {finishing ? 'Finishing…' : isEvaluation ? 'Save PR & Finish' : 'Finish Workout'}
+          {finishing ? t('finishing') : isEvaluation ? t('savePrAndFinish') : t('finishWorkout')}
         </Button>
         {!allComplete && !isEvaluation && (
           <p className="text-center text-xs text-muted-foreground">
-            {remaining} set{remaining !== 1 ? 's' : ''} remaining
+            {remaining !== 1 ? t('setsRemainingPlural', { count: remaining }) : t('setsRemaining', { count: remaining })}
           </p>
         )}
       </div>

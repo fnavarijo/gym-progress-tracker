@@ -1,4 +1,7 @@
+'use client';
+
 import { CardContainer } from '@/components/ui/card-container';
+import { useTranslations } from 'next-intl';
 
 interface WeekProgress {
   completed: number;
@@ -9,13 +12,14 @@ export function WeekProgressCard({ weekProgress }: { weekProgress: WeekProgress 
   const { completed, total } = weekProgress;
   const progressPct = (completed / total) * 100;
   const remaining = total - completed;
+  const t = useTranslations('WeekProgress');
 
   return (
     <CardContainer className="gap-4">
       <div className="flex justify-between items-start">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-            This Week
+            {t('thisWeek')}
           </p>
           <div className="flex items-baseline gap-1">
             <span className="text-5xl font-bold tabular-nums text-foreground leading-none">
@@ -23,16 +27,16 @@ export function WeekProgressCard({ weekProgress }: { weekProgress: WeekProgress 
             </span>
             <span className="text-xl text-muted-foreground font-medium">/ {total}</span>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">workouts done</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('workoutsDone')}</p>
         </div>
         {remaining > 0 && (
           <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-            {remaining} left
+            {t('left', { count: remaining })}
           </span>
         )}
         {remaining === 0 && (
           <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-            Complete!
+            {t('complete')}
           </span>
         )}
       </div>

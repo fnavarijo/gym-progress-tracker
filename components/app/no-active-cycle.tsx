@@ -1,11 +1,14 @@
-import Link from 'next/link';
 import { Dumbbell, Sprout, ChevronRight } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
+import { getTranslations } from 'next-intl/server';
 
-export function NoCycleState() {
+export async function NoCycleState() {
+  const t = await getTranslations('NoCycle');
+
   return (
     <div className="flex flex-col gap-3">
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        Get Started
+        {t('getStarted')}
       </p>
       <Link href="/cycle/new">
         <div className="flex items-center gap-4 rounded-xl border bg-card px-4 py-3.5 transition-colors hover:bg-accent cursor-pointer">
@@ -13,8 +16,8 @@ export function NoCycleState() {
             <Dumbbell className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">I know my max PRs</p>
-            <p className="text-xs text-muted-foreground">Jump straight into your cycle</p>
+            <p className="font-semibold text-sm">{t('knowMyPrs')}</p>
+            <p className="text-xs text-muted-foreground">{t('knowMyPrsDescription')}</p>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
         </div>
@@ -25,8 +28,8 @@ export function NoCycleState() {
             <Sprout className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">I&apos;m new to weightlifting</p>
-            <p className="text-xs text-muted-foreground">Start with an evaluation week</p>
+            <p className="font-semibold text-sm">{t('newToWeightlifting')}</p>
+            <p className="text-xs text-muted-foreground">{t('newToWeightliftingDescription')}</p>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
         </div>

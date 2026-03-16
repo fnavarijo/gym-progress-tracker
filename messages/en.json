@@ -1,0 +1,226 @@
+{
+  "Common": {
+    "logout": "Logout",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "cancel": "Cancel",
+    "save": "Save",
+    "update": "Update",
+    "momentum": "Momentum"
+  },
+  "Auth": {
+    "login": {
+      "title": "Login",
+      "description": "Enter your email below to login to your account",
+      "emailLabel": "Email",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot your password?",
+      "submitButton": "Login",
+      "loggingIn": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "signUp": {
+      "title": "Sign up",
+      "description": "Create a new account",
+      "emailLabel": "Email",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "Password",
+      "repeatPasswordLabel": "Repeat Password",
+      "submitButton": "Sign up",
+      "creatingAccount": "Creating an account...",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Login"
+    },
+    "signUpSuccess": {
+      "title": "Thank you for signing up!",
+      "description": "Check your email to confirm",
+      "body": "You've successfully signed up. Please check your email to confirm your account before signing in."
+    },
+    "forgotPassword": {
+      "title": "Reset Your Password",
+      "description": "Type in your email and we'll send you a link to reset your password",
+      "emailLabel": "Email",
+      "emailPlaceholder": "m@example.com",
+      "submitButton": "Send reset email",
+      "sending": "Sending...",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Login",
+      "successTitle": "Check Your Email",
+      "successDescription": "Password reset instructions sent",
+      "successBody": "If you registered using your email and password, you will receive a password reset email."
+    },
+    "updatePassword": {
+      "title": "Reset Your Password",
+      "description": "Please enter your new password below.",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "New password",
+      "submitButton": "Save new password",
+      "saving": "Saving..."
+    },
+    "error": {
+      "title": "Sorry, something went wrong.",
+      "unspecified": "An unspecified error occurred.",
+      "codeError": "Code error: {error}"
+    }
+  },
+  "Home": {
+    "brandingHeadline": "Build strength,",
+    "brandingHeadline2": "track progress.",
+    "brandingDescription": "Your personal weightlifting companion. Track PRs, follow structured cycles, and watch yourself grow stronger every week.",
+    "getStarted": "Get Started"
+  },
+  "Dashboard": {
+    "greeting": "Hey, {name}!",
+    "subGreeting": "Ready to build momentum?"
+  },
+  "NoCycle": {
+    "getStarted": "Get Started",
+    "knowMyPrs": "I know my max PRs",
+    "knowMyPrsDescription": "Jump straight into your cycle",
+    "newToWeightlifting": "I'm new to weightlifting",
+    "newToWeightliftingDescription": "Start with an evaluation week"
+  },
+  "CycleProgress": {
+    "activeCycle": "Active Cycle",
+    "goodMorning": "Good Morning!",
+    "goodAfternoon": "Good Afternoon!",
+    "goodEvening": "Good Evening!",
+    "weekOf": "Week {current} of {total}",
+    "throughCycle": "{pct}% through cycle",
+    "thisWeeksLifts": "This Week's Lifts",
+    "startTodaysLift": "Start Today's Lift",
+    "todaysLiftDone": "Today's Lift Done",
+    "noLiftScheduled": "No Lift Scheduled Today",
+    "viewFullCycle": "View Full Cycle"
+  },
+  "WeekProgress": {
+    "thisWeek": "This Week",
+    "workoutsDone": "workouts done",
+    "left": "{count} left",
+    "complete": "Complete!"
+  },
+  "Cycle": {
+    "new": {
+      "brandingHeadline": "New cycle,",
+      "brandingHeadline2": "new goals.",
+      "brandingDescription": "Enter your current PRs and pick a start date to generate your personalized training program.",
+      "pageTitle": "Create New Cycle"
+    },
+    "onboarding": {
+      "brandingHeadline": "Start from zero.",
+      "brandingHeadline2": "Build from there.",
+      "brandingDescription": "One week of evaluation sets your baseline. From there, your program is fully personalized to you.",
+      "gettingStarted": "Getting Started",
+      "evaluationWeek": "Evaluation Week",
+      "whatToExpect": "What to Expect",
+      "evaluationDescription": "Before starting your training program, you'll complete one week of evaluation to find your personal records (PRs) for each lift. These numbers are used to calculate all your future training weights automatically.",
+      "oneWeekDuration": "1-week duration",
+      "oneWeekDurationDescription": "Complete all evaluation sets in a week",
+      "findYourMaxPr": "Find your max PR",
+      "findYourMaxPrDescription": "Test each lift to find your one-rep max",
+      "unlockTrainingPlan": "Unlock your training plan",
+      "unlockTrainingPlanDescription": "Your PRs power your personalized program",
+      "startEvaluationWeek": "Start Evaluation Week",
+      "starting": "Starting..."
+    },
+    "summary": {
+      "activeCycle": "Active Cycle",
+      "fullCycleView": "Full Cycle View",
+      "weekOf": "Week {current} of {total}",
+      "daysRemaining": "{days}d remaining",
+      "backToDashboard": "Back to Dashboard",
+      "cycleProgress": "Cycle Progress",
+      "workoutsDone": "workouts done",
+      "weekStreak": "{count} week streak",
+      "complete": "% complete",
+      "consistencyHeatmap": "Consistency Heatmap",
+      "legendDone": "Done",
+      "legendInProgress": "In progress",
+      "legendMissed": "Missed",
+      "legendUpcoming": "Upcoming"
+    }
+  },
+  "CycleForm": {
+    "startDate": "Start Date",
+    "enterYourPrs": "Enter Your PRs",
+    "prHintNew": "Enter your 1-rep max for each lift. These will be used to calculate your training weights. If you don't know any, leave it empty.",
+    "prHintReturning": "Pre-populated from your last cycle — update any values if your PRs have changed.",
+    "startCycle": "Start Cycle",
+    "creating": "Creating…"
+  },
+  "WeekPreview": {
+    "title": "Week 1 Preview",
+    "description": "Calculated working sets for your first week",
+    "enterPrToPreview": "Enter PR to preview working sets"
+  },
+  "Workout": {
+    "maxPr": "Max PR: {value}",
+    "maxPrEmpty": "Max PR: —",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "We couldn't load this workout. Try again or go back home.",
+    "tryAgain": "Try again",
+    "backToHome": "Back to home",
+    "notFoundTitle": "Workout not found",
+    "notFoundDescription": "This workout doesn't exist or you don't have access to it.",
+    "workoutLabel": "Workout",
+    "weekOf": "Week {week} of {total}",
+    "liftsDone": "{completed} of {total} lifts done",
+    "noPrRecorded": "No PR Recorded",
+    "enterOneRm": "Enter your 1RM to continue",
+    "lb": "lb",
+    "updating": "Updating",
+    "dontKnowPr": "Don't know your PR?",
+    "dontKnowPrBody": "Do a quick warm-up round: {w1}, {w2} and {w3}. Register the weight you lifted at your 100% effort.",
+    "evaluationSets": "Evaluation Sets",
+    "sets": "Sets",
+    "set": "Set {number}",
+    "tap": "Tap",
+    "logWeight": "+ Log weight",
+    "actualWeight": "Actual Weight",
+    "lbPerSide": "{value} lb/side",
+    "finishing": "Finishing…",
+    "savePrAndFinish": "Save PR & Finish",
+    "finishWorkout": "Finish Workout",
+    "setsRemaining": "{count} set remaining",
+    "setsRemainingPlural": "{count} sets remaining",
+    "couldNotSave": "Could not save. Please try again.",
+    "couldNotSaveSets": "Could not save sets. Please try again.",
+    "couldNotSaveEval": "Could not save evaluation result. Please try again.",
+    "couldNotFinish": "Could not finish workout. Please try again.",
+    "couldNotUpdatePr": "Could not update PR. Please try again.",
+    "couldNotSaveWeight": "Could not save weight. Please try again.",
+    "logAndBuild": "Log your sets, track your progress, and build strength week by week."
+  },
+  "Plans": {
+    "title": "Training Plans",
+    "listTitle": "Plan List"
+  },
+  "Progress": {
+    "start": {
+      "title": "Start a new cycle",
+      "description": "Choose a cycle to start tracking",
+      "cycleDuration": "Cycle duration (weeks)",
+      "startCycle": "Start Cycle"
+    },
+    "register": {
+      "title": "PR Tracker",
+      "exercises": "Exercises",
+      "detail": "Detail",
+      "addExercise": "Add exercise",
+      "exerciseLabel": "Exercise",
+      "maxPrLabel": "Max PR (lbs)",
+      "maxPrPlaceholder": "Maximum weight",
+      "addExerciseButton": "Add exercise ({count}/5)",
+      "noExercisesYet": "No exercises yet. Add your first exercise!",
+      "completeCycle": "Complete cycle",
+      "max": "Max:"
+    }
+  },
+  "BackButton": {
+    "label": "Back"
+  }
+}

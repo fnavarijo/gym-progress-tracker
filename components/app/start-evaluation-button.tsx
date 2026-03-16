@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { createOnboardingCycle } from '@/api/cycle/create-onboarding-cycle';
+import { useTranslations } from 'next-intl';
 
 export function StartEvaluationButton({ planId }: { planId: number }) {
   const router = useRouter();
+  const t = useTranslations('Cycle.onboarding');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +32,7 @@ export function StartEvaluationButton({ planId }: { planId: number }) {
         onClick={handleClick}
         disabled={loading}
       >
-        {loading ? 'Starting…' : 'Start Evaluation Week'}
+        {loading ? t('starting') : t('startEvaluationWeek')}
       </Button>
     </>
   );

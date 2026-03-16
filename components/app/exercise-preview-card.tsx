@@ -1,4 +1,5 @@
 import { CardContainer } from '@/components/ui/card-container';
+import { getTranslations } from 'next-intl/server';
 
 interface ExercisePreviewCardProps {
   name: string;
@@ -15,13 +16,15 @@ const SETS = [
   { label: 'Set 3', reps: 5, pct: 0.8 },
 ] as const;
 
-export function ExercisePreviewCard({ name, pr }: ExercisePreviewCardProps) {
+export async function ExercisePreviewCard({ name, pr }: ExercisePreviewCardProps) {
+  const t = await getTranslations('WeekPreview');
+
   if (pr === 0) {
     return (
       <CardContainer className="gap-2">
         <p className="font-semibold">{name}</p>
         <p className="text-center text-sm text-muted-foreground">
-          Enter PR to preview working sets
+          {t('enterPrToPreview')}
         </p>
       </CardContainer>
     );

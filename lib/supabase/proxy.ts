@@ -1,3 +1,6 @@
+// NOTE: Auth redirects are handled in middleware.ts at the project root.
+// This file only keeps the Supabase session refresh logic used by middleware.ts.
+
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { hasEnvVars } from '../utils';
@@ -44,19 +47,10 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  await supabase.auth.getClaims();
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    return NextResponse.redirect(url);
-  }
+  // NOTE: The auth redirect logic has been removed from this function.
+  // Unauthenticated users are now redirected to /auth/login in middleware.ts.
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:

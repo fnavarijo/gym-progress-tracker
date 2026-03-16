@@ -1,0 +1,226 @@
+{
+  "Common": {
+    "logout": "Cerrar sesión",
+    "back": "Volver",
+    "loading": "Cargando...",
+    "error": "Error",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "update": "Actualizar",
+    "momentum": "Momentum"
+  },
+  "Auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Ingresa tu correo para acceder a tu cuenta",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "m@ejemplo.com",
+      "passwordLabel": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "submitButton": "Iniciar sesión",
+      "loggingIn": "Iniciando sesión...",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate"
+    },
+    "signUp": {
+      "title": "Crear cuenta",
+      "description": "Crea una nueva cuenta",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "m@ejemplo.com",
+      "passwordLabel": "Contraseña",
+      "repeatPasswordLabel": "Repetir contraseña",
+      "submitButton": "Crear cuenta",
+      "creatingAccount": "Creando cuenta...",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "alreadyHaveAccount": "¿Ya tienes cuenta?",
+      "login": "Iniciar sesión"
+    },
+    "signUpSuccess": {
+      "title": "¡Gracias por registrarte!",
+      "description": "Revisa tu correo para confirmar",
+      "body": "Te has registrado exitosamente. Por favor revisa tu correo para confirmar tu cuenta antes de iniciar sesión."
+    },
+    "forgotPassword": {
+      "title": "Restablecer contraseña",
+      "description": "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "m@ejemplo.com",
+      "submitButton": "Enviar correo de restablecimiento",
+      "sending": "Enviando...",
+      "alreadyHaveAccount": "¿Ya tienes cuenta?",
+      "login": "Iniciar sesión",
+      "successTitle": "Revisa tu correo",
+      "successDescription": "Instrucciones de restablecimiento enviadas",
+      "successBody": "Si te registraste con tu correo y contraseña, recibirás un correo para restablecer tu contraseña."
+    },
+    "updatePassword": {
+      "title": "Restablecer contraseña",
+      "description": "Por favor ingresa tu nueva contraseña.",
+      "newPasswordLabel": "Nueva contraseña",
+      "newPasswordPlaceholder": "Nueva contraseña",
+      "submitButton": "Guardar nueva contraseña",
+      "saving": "Guardando..."
+    },
+    "error": {
+      "title": "Lo sentimos, algo salió mal.",
+      "unspecified": "Ocurrió un error no especificado.",
+      "codeError": "Código de error: {error}"
+    }
+  },
+  "Home": {
+    "brandingHeadline": "Construye fuerza,",
+    "brandingHeadline2": "sigue el progreso.",
+    "brandingDescription": "Tu compañero personal de levantamiento de pesas. Registra tus PRs, sigue ciclos estructurados y observa cómo te vuelves más fuerte cada semana.",
+    "getStarted": "Comenzar"
+  },
+  "Dashboard": {
+    "greeting": "¡Hola, {name}!",
+    "subGreeting": "¿Listo para construir momentum?"
+  },
+  "NoCycle": {
+    "getStarted": "Comenzar",
+    "knowMyPrs": "Conozco mis PRs máximos",
+    "knowMyPrsDescription": "Entra directo a tu ciclo",
+    "newToWeightlifting": "Soy nuevo en levantamiento de pesas",
+    "newToWeightliftingDescription": "Empieza con una semana de evaluación"
+  },
+  "CycleProgress": {
+    "activeCycle": "Ciclo activo",
+    "goodMorning": "¡Buenos días!",
+    "goodAfternoon": "¡Buenas tardes!",
+    "goodEvening": "¡Buenas noches!",
+    "weekOf": "Semana {current} de {total}",
+    "throughCycle": "{pct}% del ciclo",
+    "thisWeeksLifts": "Levantamientos de esta semana",
+    "startTodaysLift": "Empezar levantamiento de hoy",
+    "todaysLiftDone": "Levantamiento de hoy completado",
+    "noLiftScheduled": "Sin levantamiento programado hoy",
+    "viewFullCycle": "Ver ciclo completo"
+  },
+  "WeekProgress": {
+    "thisWeek": "Esta semana",
+    "workoutsDone": "entrenamientos completados",
+    "left": "{count} restantes",
+    "complete": "¡Completo!"
+  },
+  "Cycle": {
+    "new": {
+      "brandingHeadline": "Nuevo ciclo,",
+      "brandingHeadline2": "nuevas metas.",
+      "brandingDescription": "Ingresa tus PRs actuales y elige una fecha de inicio para generar tu programa de entrenamiento personalizado.",
+      "pageTitle": "Crear Nuevo Ciclo"
+    },
+    "onboarding": {
+      "brandingHeadline": "Empieza desde cero.",
+      "brandingHeadline2": "Construye desde ahí.",
+      "brandingDescription": "Una semana de evaluación establece tu línea base. A partir de ahí, tu programa es completamente personalizado.",
+      "gettingStarted": "Primeros pasos",
+      "evaluationWeek": "Semana de evaluación",
+      "whatToExpect": "¿Qué esperar?",
+      "evaluationDescription": "Antes de comenzar tu programa de entrenamiento, completarás una semana de evaluación para encontrar tus récords personales (PRs) en cada ejercicio. Estos números se usan para calcular automáticamente todos tus pesos de entrenamiento futuros.",
+      "oneWeekDuration": "Duración de 1 semana",
+      "oneWeekDurationDescription": "Completa todos los sets de evaluación en una semana",
+      "findYourMaxPr": "Encuentra tu PR máximo",
+      "findYourMaxPrDescription": "Prueba cada ejercicio para encontrar tu máximo de una repetición",
+      "unlockTrainingPlan": "Desbloquea tu plan de entrenamiento",
+      "unlockTrainingPlanDescription": "Tus PRs potencian tu programa personalizado",
+      "startEvaluationWeek": "Comenzar semana de evaluación",
+      "starting": "Iniciando..."
+    },
+    "summary": {
+      "activeCycle": "Ciclo activo",
+      "fullCycleView": "Vista completa del ciclo",
+      "weekOf": "Semana {current} de {total}",
+      "daysRemaining": "{days}d restantes",
+      "backToDashboard": "Volver al inicio",
+      "cycleProgress": "Progreso del ciclo",
+      "workoutsDone": "entrenamientos completados",
+      "weekStreak": "{count} semana en racha",
+      "complete": "% completado",
+      "consistencyHeatmap": "Mapa de consistencia",
+      "legendDone": "Completado",
+      "legendInProgress": "En progreso",
+      "legendMissed": "Perdido",
+      "legendUpcoming": "Próximo"
+    }
+  },
+  "CycleForm": {
+    "startDate": "Fecha de inicio",
+    "enterYourPrs": "Ingresa tus PRs",
+    "prHintNew": "Ingresa tu máximo de 1 repetición para cada ejercicio. Estos se usarán para calcular tus pesos de entrenamiento. Si no conoces alguno, déjalo vacío.",
+    "prHintReturning": "Datos de tu último ciclo — actualiza cualquier valor si tus PRs han cambiado.",
+    "startCycle": "Iniciar ciclo",
+    "creating": "Creando..."
+  },
+  "WeekPreview": {
+    "title": "Vista previa Semana 1",
+    "description": "Sets de trabajo calculados para tu primera semana",
+    "enterPrToPreview": "Ingresa tu PR para ver los sets de trabajo"
+  },
+  "Workout": {
+    "maxPr": "PR Máximo: {value}",
+    "maxPrEmpty": "PR Máximo: —",
+    "errorTitle": "Algo salió mal",
+    "errorDescription": "No pudimos cargar este entrenamiento. Inténtalo de nuevo o regresa al inicio.",
+    "tryAgain": "Intentar de nuevo",
+    "backToHome": "Volver al inicio",
+    "notFoundTitle": "Entrenamiento no encontrado",
+    "notFoundDescription": "Este entrenamiento no existe o no tienes acceso a él.",
+    "workoutLabel": "Entrenamiento",
+    "weekOf": "Semana {week} de {total}",
+    "liftsDone": "{completed} de {total} levantamientos completados",
+    "noPrRecorded": "Sin PR registrado",
+    "enterOneRm": "Ingresa tu 1RM para continuar",
+    "lb": "lb",
+    "updating": "Actualizando",
+    "dontKnowPr": "¿No conoces tu PR?",
+    "dontKnowPrBody": "Haz una ronda de calentamiento rápida: {w1}, {w2} y {w3}. Registra el peso que levantaste al 100% de esfuerzo.",
+    "evaluationSets": "Sets de evaluación",
+    "sets": "Sets",
+    "set": "Set {number}",
+    "tap": "Toque",
+    "logWeight": "+ Registrar peso",
+    "actualWeight": "Peso real",
+    "lbPerSide": "{value} lb/lado",
+    "finishing": "Finalizando...",
+    "savePrAndFinish": "Guardar PR y finalizar",
+    "finishWorkout": "Finalizar entrenamiento",
+    "setsRemaining": "{count} set restante",
+    "setsRemainingPlural": "{count} sets restantes",
+    "couldNotSave": "No se pudo guardar. Inténtalo de nuevo.",
+    "couldNotSaveSets": "No se pudieron guardar los sets. Inténtalo de nuevo.",
+    "couldNotSaveEval": "No se pudo guardar el resultado de evaluación. Inténtalo de nuevo.",
+    "couldNotFinish": "No se pudo finalizar el entrenamiento. Inténtalo de nuevo.",
+    "couldNotUpdatePr": "No se pudo actualizar el PR. Inténtalo de nuevo.",
+    "couldNotSaveWeight": "No se pudo guardar el peso. Inténtalo de nuevo.",
+    "logAndBuild": "Registra tus sets, sigue tu progreso y desarrolla fuerza semana tras semana."
+  },
+  "Plans": {
+    "title": "Planes de entrenamiento",
+    "listTitle": "Lista de planes"
+  },
+  "Progress": {
+    "start": {
+      "title": "Empieza un nuevo ciclo",
+      "description": "Elige un ciclo para empezar el seguimiento",
+      "cycleDuration": "Duración del ciclo (semanas)",
+      "startCycle": "Iniciar ciclo"
+    },
+    "register": {
+      "title": "PR Tracker",
+      "exercises": "Ejercicios",
+      "detail": "Detalle",
+      "addExercise": "Agrega ejercicio",
+      "exerciseLabel": "Ejercicio",
+      "maxPrLabel": "Max PR (lbs)",
+      "maxPrPlaceholder": "Peso máximo",
+      "addExerciseButton": "Agregar ejercicio ({count}/5)",
+      "noExercisesYet": "No hay ejercicios todavía. ¡Agrega tu primer ejercicio!",
+      "completeCycle": "Completar ciclo",
+      "max": "Max:"
+    }
+  },
+  "BackButton": {
+    "label": "Volver"
+  }
+}
