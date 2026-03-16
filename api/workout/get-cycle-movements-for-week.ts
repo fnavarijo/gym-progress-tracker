@@ -57,7 +57,7 @@ export async function getCycleMovementsForWeek(
     cycleMovements.map((cycleMovement) => [cycleMovement.movement_id, cycleMovement]),
   );
 
-  return planMovements.map((planMovement) => {
+  return planMovements.sort((a, b) => a.day_of_week - b.day_of_week).map((planMovement) => {
     const cycleMovement = cycleByMovementId.get(planMovement.movement_id);
     const completed = cycleMovement?.workouts.some((workout) => workout.completed_at !== null) ?? false;
 

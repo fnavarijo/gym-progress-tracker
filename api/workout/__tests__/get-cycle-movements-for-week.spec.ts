@@ -17,9 +17,10 @@ function makeMockSupabase({
   const planEq1    = jest.fn().mockReturnValue({ eq: planEq2 });
   const planSelect = jest.fn().mockReturnValue({ eq: planEq1 });
 
-  // Query B: from('cycle_movements').select(...).eq('cycle_id', cycleId)
-  const cycleEq     = jest.fn().mockResolvedValue(cycleMovementsResult);
-  const cycleSelect = jest.fn().mockReturnValue({ eq: cycleEq });
+  // Query B: from('cycle_movements').select(...).eq('cycle_id', cycleId).eq('workouts.week', week)
+  const cycleEq2    = jest.fn().mockResolvedValue(cycleMovementsResult);
+  const cycleEq1    = jest.fn().mockReturnValue({ eq: cycleEq2 });
+  const cycleSelect = jest.fn().mockReturnValue({ eq: cycleEq1 });
 
   const from = jest.fn().mockImplementation((table: string) => {
     if (table === 'plan_movements') return { select: planSelect };
@@ -29,7 +30,7 @@ function makeMockSupabase({
 
   return {
     from,
-    _mocks: { planEq1, planEq2, cycleEq },
+    _mocks: { planEq1, planEq2, cycleEq1, cycleEq2 },
   };
 }
 
@@ -151,6 +152,23 @@ describe('getCycleMovementsForWeek', () => {
     const result = await getCycleMovementsForWeek(1, 5, 2);
 
     expect(result).toEqual([]);
+  });
+
+  it('returns entries sorted by day_of_week ascending regardless of DB order', async () => {
+    const unorderedPlanData = [
+      { movement_id: 2, day_of_week: 5, movements: { name: 'Bench Press' }, plan_routines: [{ week: 1 }] },
+      { movement_id: 1, day_of_week: 1, movements: { name: 'Back Squat' },  plan_routines: [{ week: 1 }] },
+      { movement_id: 3, day_of_week: 3, movements: { name: 'Deadlift' },    plan_routines: [{ week: 1 }] },
+    ];
+    const mockSupabase = makeMockSupabase({
+      planMovementsResult:  { data: unorderedPlanData, error: null },
+      cycleMovementsResult: { data: [], error: null },
+    });
+    mockCreateClient.mockResolvedValue(mockSupabase as never);
+
+    const result = await getCycleMovementsForWeek(1, 5, 1);
+
+    expect(result.map((entry) => entry.dayOfWeek)).toEqual([1, 3, 5]);
   });
 
   it('throws on DB error from query A', async () => {
