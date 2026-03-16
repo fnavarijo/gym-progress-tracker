@@ -1,3 +1,4 @@
+import { withSerwist } from '@serwist/turbopack';
 import createNextIntlPlugin from 'next-intl/plugin';
 import type { NextConfig } from 'next';
 
@@ -7,4 +8,4 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
 };
 
-export default withNextIntl(nextConfig);
+export default withSerwist(withNextIntl(nextConfig));

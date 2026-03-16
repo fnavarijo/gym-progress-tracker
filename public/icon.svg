@@ -1,0 +1,35 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="roundedClip">
+      <rect width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background: hsl(160, 10%, 6%) = #0d1210 -->
+  <rect width="512" height="512" rx="112" ry="112" fill="#0d1210"/>
+
+  <g clip-path="url(#roundedClip)">
+    <!-- Minimal lightning bolt: primary hsl(79,96%,73%) = #c8f557 -->
+    <g filter="url(#subtleGlow)">
+      <polygon
+        points="
+          296,68
+          176,272
+          236,272
+          148,444
+          364,216
+          296,216
+          388,68
+        "
+        fill="#c8f557"
+      />
+    </g>
+  </g>
+</svg>

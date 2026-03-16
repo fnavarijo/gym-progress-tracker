@@ -49,8 +49,9 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.includes('/auth');
+  const isPublicAsset = pathname === '/manifest.webmanifest' || pathname.startsWith('/serwist/');
 
-  if (!user && !isAuthRoute) {
+  if (!user && !isAuthRoute && !isPublicAsset) {
     const url = request.nextUrl.clone();
     // Detect locale: English has /en prefix, Spanish (default) has no prefix.
     const isEnglish = pathname.startsWith('/en/') || pathname === '/en';
@@ -64,6 +65,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|serwist|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
