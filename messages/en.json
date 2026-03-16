@@ -95,7 +95,8 @@
     "startTodaysLift": "Start Today's Lift",
     "todaysLiftDone": "Today's Lift Done",
     "noLiftScheduled": "No Lift Scheduled Today",
-    "viewFullCycle": "View Full Cycle"
+    "viewFullCycle": "View Full Cycle",
+    "installApp": "Install App"
   },
   "WeekProgress": {
     "thisWeek": "This Week",

@@ -95,7 +95,8 @@
     "startTodaysLift": "Empezar levantamiento de hoy",
     "todaysLiftDone": "Levantamiento de hoy completado",
     "noLiftScheduled": "Sin levantamiento programado hoy",
-    "viewFullCycle": "Ver ciclo completo"
+    "viewFullCycle": "Ver ciclo completo",
+    "installApp": "Instalar app"
   },
   "WeekProgress": {
     "thisWeek": "Esta semana",

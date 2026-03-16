@@ -6,6 +6,7 @@ import { WorkoutList } from '@/components/app/workout-list';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from '@/components/logout-button';
 import { LocaleSwitcher } from '@/components/app/locale-switcher';
+import { PwaInstallButton } from '@/components/app/pwa-install-button';
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 
@@ -72,6 +73,7 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
         >
           <Link href="/cycle/summary">{t('viewFullCycle')}</Link>
         </Button>
+        <PwaInstallButton label={t('installApp')} />
         <LogoutButton />
         <div className="flex justify-center">
           <LocaleSwitcher />
