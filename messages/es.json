@@ -198,7 +198,46 @@
   },
   "Plans": {
     "title": "Planes de entrenamiento",
-    "listTitle": "Lista de planes"
+    "listTitle": "Lista de planes",
+    "eyebrow": "Admin",
+    "createPlan": "Crear plan",
+    "cancelCreate": "Cancelar",
+    "system": "Sistema",
+    "noPlansYet": "Sin planes aún. ¡Crea el primero!",
+    "movementCount": "{count} movimientos",
+    "weekCount": "{count} sem",
+    "wizard": {
+      "stepBasics": "Detalles del plan",
+      "stepMovements": "Asignar movimientos",
+      "stepRoutines": "Configurar rutinas",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "save": "Guardar plan",
+      "saving": "Guardando...",
+      "nameLabel": "Nombre del plan",
+      "namePlaceholder": "ej. Bloque de Fuerza A",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Descripción opcional",
+      "lengthWeeksLabel": "Duración del ciclo",
+      "setsPerSessionLabel": "Sets por sesión",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "noneOption": "Ninguno",
+      "couldNotSave": "No se pudo guardar el plan. Inténtalo de nuevo.",
+      "couldNotUpdate": "No se pudo actualizar el plan. Inténtalo de nuevo.",
+      "update": "Actualizar plan",
+      "updating": "Actualizando..."
+    },
+    "validation": {
+      "nameRequired": "El nombre del plan es requerido.",
+      "atLeastOneDay": "Asigna al menos un movimiento a un día.",
+      "duplicateMovement": "Cada movimiento solo puede asignarse a un día.",
+      "incompleteRoutines": "Completa todas las celdas de rutina antes de guardar."
+    },
+    "editPlan": "Editar"
   },
   "Progress": {
     "start": {
