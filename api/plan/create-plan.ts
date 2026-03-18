@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { validatePlanInput } from './validate-plan-input';
 
 export interface CreatePlanMovementInput {
   movementId: number;
@@ -24,6 +25,9 @@ export interface CreatePlanInput {
 }
 
 export async function createPlan(input: CreatePlanInput): Promise<{ error: string | null }> {
+  const validationError = validatePlanInput(input);
+  if (validationError) return { error: validationError };
+
   const supabase = await createClient();
 
   // Step 1: Insert the plan

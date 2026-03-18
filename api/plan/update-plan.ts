@@ -2,11 +2,15 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { CreatePlanInput } from './create-plan';
+import { validatePlanInput } from './validate-plan-input';
 
 export async function updatePlan(
   planId: number,
   input: CreatePlanInput,
 ): Promise<{ error: string | null }> {
+  const validationError = validatePlanInput(input);
+  if (validationError) return { error: validationError };
+
   const supabase = await createClient();
 
   // Step 1: Update plan fields

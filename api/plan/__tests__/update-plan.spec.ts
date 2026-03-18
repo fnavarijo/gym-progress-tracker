@@ -9,7 +9,7 @@ const mockCreateClient = jest.mocked(createClient);
 const validInput: CreatePlanInput = {
   name: 'Updated Plan',
   description: 'New description',
-  lengthWeeks: 4,
+  lengthWeeks: 1,
   movements: [
     { movementId: 1, dayOfWeek: 1 },
     { movementId: 2, dayOfWeek: 3 },
@@ -88,7 +88,7 @@ describe('updatePlan', () => {
     expect(updateFn).toHaveBeenCalledWith({
       name: 'Updated Plan',
       description: 'New description',
-      length_weeks: 4,
+      length_weeks: 1,
     });
     const eqFn = updateFn.mock.results[0].value.eq;
     expect(eqFn).toHaveBeenCalledWith('id', 99);
@@ -183,6 +183,34 @@ describe('updatePlan', () => {
     expect(result).toEqual({ error: null });
     // Only 5 from calls: update plan, select movements, delete movements, insert movements, insert routines
     expect(from).toHaveBeenCalledTimes(5);
+  });
+
+  it('returns error without calling Supabase when movements is empty', async () => {
+    const result = await updatePlan(99, { ...validInput, movements: [] });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
+  });
+
+  it('returns error without calling Supabase when a routine week exceeds lengthWeeks', async () => {
+    const result = await updatePlan(99, {
+      ...validInput,
+      routines: [{ dayOfWeek: 1, week: 99, setNumber: 1, percentagePr: 0.75, repetitions: 5 }],
+    });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
+  });
+
+  it('returns error without calling Supabase when a week has no routines', async () => {
+    const result = await updatePlan(99, {
+      ...validInput,
+      lengthWeeks: 2,
+      routines: [{ dayOfWeek: 1, week: 1, setNumber: 1, percentagePr: 0.75, repetitions: 5 }],
+    });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
   });
 
   it('returns error when plan update fails', async () => {

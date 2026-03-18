@@ -8,7 +8,7 @@ const mockCreateClient = jest.mocked(createClient);
 const validInput: CreatePlanInput = {
   name: 'Strength Block A',
   description: 'Focus on big lifts',
-  lengthWeeks: 5,
+  lengthWeeks: 1,
   movements: [
     { movementId: 1, dayOfWeek: 1 },
     { movementId: 2, dayOfWeek: 3 },
@@ -71,7 +71,7 @@ describe('createPlan', () => {
     expect(insertFn).toHaveBeenCalledWith({
       name: 'Strength Block A',
       description: 'Focus on big lifts',
-      length_weeks: 5,
+      length_weeks: 1,
       is_system: false,
     });
   });
@@ -133,6 +133,34 @@ describe('createPlan', () => {
     const result = await createPlan(validInput);
 
     expect(result).toEqual({ error: 'movements insert failed' });
+  });
+
+  it('returns error without calling Supabase when movements is empty', async () => {
+    const result = await createPlan({ ...validInput, movements: [] });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
+  });
+
+  it('returns error without calling Supabase when a routine week exceeds lengthWeeks', async () => {
+    const result = await createPlan({
+      ...validInput,
+      routines: [{ dayOfWeek: 1, week: 99, setNumber: 1, percentagePr: 0.75, repetitions: 5 }],
+    });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
+  });
+
+  it('returns error without calling Supabase when a week has no routines', async () => {
+    const result = await createPlan({
+      ...validInput,
+      lengthWeeks: 2,
+      routines: [{ dayOfWeek: 1, week: 1, setNumber: 1, percentagePr: 0.75, repetitions: 5 }],
+    });
+
+    expect(result.error).not.toBeNull();
+    expect(mockCreateClient).not.toHaveBeenCalled();
   });
 
   it('returns error message when plan_routines insert fails', async () => {
