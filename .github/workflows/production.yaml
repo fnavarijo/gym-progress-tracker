@@ -23,6 +23,6 @@ jobs:
           version: latest
 
       - run: echo "prueba"
-      - run: echo "$TESTING"
+      - run: echo "${TESTING:=not-defined}"
       - run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
       - run: supabase db push
