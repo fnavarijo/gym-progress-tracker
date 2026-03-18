@@ -1,19 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Movement } from '@/api/movement/get-all-movements';
 import { PlanDetail } from '@/api/plan/get-all-plan-details';
-import { createPlan, CreatePlanMovementInput, CreatePlanRoutineInput } from '@/api/plan/create-plan';
+import {
+  createPlan,
+  CreatePlanMovementInput,
+  CreatePlanRoutineInput,
+} from '@/api/plan/create-plan';
 import { updatePlan } from '@/api/plan/update-plan';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PlanRoutineGrid, RoutineCellMap } from './plan-routine-grid';
 
 interface MovementRoutineConfig {
   movementId: number;
   movementName: string;
   dayOfWeek: number;
+  setsPerWeek: Record<number, number>;
   cells: RoutineCellMap;
 }
 
@@ -23,7 +29,10 @@ interface PlanCreationWizardProps {
   onClose?: () => void;
 }
 
-const DAY_OF_WEEK_KEYS: Record<number, 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'> = {
+const DAY_OF_WEEK_KEYS: Record<
+  number,
+  'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'
+> = {
   1: 'monday',
   2: 'tuesday',
   3: 'wednesday',
@@ -31,8 +40,16 @@ const DAY_OF_WEEK_KEYS: Record<number, 'monday' | 'tuesday' | 'wednesday' | 'thu
   5: 'friday',
 };
 
-function initDayMovements(initialPlan?: PlanDetail): Record<number, number | null> {
-  const base: Record<number, number | null> = { 1: null, 2: null, 3: null, 4: null, 5: null };
+function initDayMovements(
+  initialPlan?: PlanDetail,
+): Record<number, number | null> {
+  const base: Record<number, number | null> = {
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+  };
   if (!initialPlan) return base;
   for (const planMovement of initialPlan.planMovements) {
     base[planMovement.dayOfWeek] = planMovement.movementId;
@@ -40,35 +57,40 @@ function initDayMovements(initialPlan?: PlanDetail): Record<number, number | nul
   return base;
 }
 
-function initMovementRoutineConfigs(initialPlan?: PlanDetail): MovementRoutineConfig[] {
+function initMovementRoutineConfigs(
+  initialPlan?: PlanDetail,
+): MovementRoutineConfig[] {
   if (!initialPlan) return [];
   return [...initialPlan.planMovements]
     .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
-    .map((planMovement) => ({
-      movementId: planMovement.movementId,
-      movementName: planMovement.movementName,
-      dayOfWeek: planMovement.dayOfWeek,
-      cells: Object.fromEntries(
-        planMovement.routines.map((routine) => [
-          `${routine.week}_${routine.setNumber}`,
-          {
-            percentagePr: String(Math.round(routine.percentagePr * 100)),
-            repetitions: String(routine.repetitions),
-          },
-        ]),
-      ),
-    }));
+    .map((planMovement) => {
+      const setsPerWeek: Record<number, number> = {};
+      for (const routine of planMovement.routines) {
+        setsPerWeek[routine.week] = Math.max(setsPerWeek[routine.week] ?? 0, routine.setNumber);
+      }
+      return {
+        movementId: planMovement.movementId,
+        movementName: planMovement.movementName,
+        dayOfWeek: planMovement.dayOfWeek,
+        setsPerWeek,
+        cells: Object.fromEntries(
+          planMovement.routines.map((routine) => [
+            `${routine.week}_${routine.setNumber}`,
+            {
+              percentagePr: String(Math.round(routine.percentagePr * 100)),
+              repetitions: String(routine.repetitions),
+            },
+          ]),
+        ),
+      };
+    });
 }
 
-function initSetsPerSession(initialPlan?: PlanDetail): number {
-  if (!initialPlan) return 3;
-  const allSetNumbers = initialPlan.planMovements.flatMap((pm) =>
-    pm.routines.map((r) => r.setNumber),
-  );
-  return allSetNumbers.length > 0 ? Math.max(...allSetNumbers) : 3;
-}
-
-export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCreationWizardProps) {
+export function PlanCreationWizard({
+  movements,
+  initialPlan,
+  onClose,
+}: PlanCreationWizardProps) {
   const t = useTranslations('Plans');
   const router = useRouter();
 
@@ -77,17 +99,24 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [planName, setPlanName] = useState(initialPlan?.name ?? '');
-  const [planDescription, setPlanDescription] = useState(initialPlan?.description ?? '');
-  const [lengthWeeks, setLengthWeeks] = useState<4 | 5 | 6>(
-    (initialPlan?.lengthWeeks as 4 | 5 | 6) ?? 5,
+  const [planDescription, setPlanDescription] = useState(
+    initialPlan?.description ?? '',
   );
-  const [setsPerSession, setSetsPerSession] = useState(initSetsPerSession(initialPlan));
-  const [dayMovements, setDayMovements] = useState<Record<number, number | null>>(
-    initDayMovements(initialPlan),
+  const [lengthWeeks, setLengthWeeks] = useState<number>(
+    initialPlan?.lengthWeeks ?? 4,
   );
-  const [movementRoutineConfigs, setMovementRoutineConfigs] = useState<MovementRoutineConfig[]>(
-    initMovementRoutineConfigs(initialPlan),
+  const [planSlug, setPlanSlug] = useState(initialPlan?.slug ?? '');
+  const [isSystem, setIsSystem] = useState(initialPlan?.isSystem ?? false);
+  const [evaluationWeek, setEvaluationWeek] = useState(
+    initialPlan?.evaluationWeek ?? 1,
   );
+  const slugManuallyEdited = useRef(initialPlan?.slug ? true : false);
+  const [dayMovements, setDayMovements] = useState<
+    Record<number, number | null>
+  >(initDayMovements(initialPlan));
+  const [movementRoutineConfigs, setMovementRoutineConfigs] = useState<
+    MovementRoutineConfig[]
+  >(initMovementRoutineConfigs(initialPlan));
   const [activeRoutineTab, setActiveRoutineTab] = useState(0);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -96,8 +125,11 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
     setCurrentStep(1);
     setPlanName('');
     setPlanDescription('');
-    setLengthWeeks(5);
-    setSetsPerSession(3);
+    setLengthWeeks(4);
+    setPlanSlug('');
+    setIsSystem(false);
+    setEvaluationWeek(1);
+    slugManuallyEdited.current = false;
     setDayMovements({ 1: null, 2: null, 3: null, 4: null, 5: null });
     setMovementRoutineConfigs([]);
     setActiveRoutineTab(0);
@@ -116,29 +148,38 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
   function validateStep1(): string | null {
     if (!planName.trim()) return t('validation.nameRequired');
+    if (!planSlug.trim()) return t('validation.slugRequired');
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(planSlug))
+      return t('validation.slugInvalid');
+    if (evaluationWeek < 1 || evaluationWeek > lengthWeeks)
+      return t('validation.evaluationWeekInvalid');
     return null;
   }
 
   function validateStep2(): string | null {
-    const assignedMovementIds = Object.values(dayMovements).filter((id) => id !== null);
+    const assignedMovementIds = Object.values(dayMovements).filter(
+      (id) => id !== null,
+    );
     if (assignedMovementIds.length === 0) return t('validation.atLeastOneDay');
     const uniqueIds = new Set(assignedMovementIds);
-    if (uniqueIds.size !== assignedMovementIds.length) return t('validation.duplicateMovement');
+    if (uniqueIds.size !== assignedMovementIds.length)
+      return t('validation.duplicateMovement');
     return null;
   }
 
   function validateStep3(): string | null {
     for (const config of movementRoutineConfigs) {
-      const weeks = Array.from({ length: lengthWeeks }, (_, i) => i + 1);
-      const sets = Array.from({ length: setsPerSession }, (_, i) => i + 1);
-      for (const week of weeks) {
-        for (const setNumber of sets) {
+      for (let week = 1; week <= lengthWeeks; week++) {
+        const weekSets = config.setsPerWeek[week] ?? 3;
+        for (let setNumber = 1; setNumber <= weekSets; setNumber++) {
           const cell = config.cells[`${week}_${setNumber}`];
           if (!cell) return t('validation.incompleteRoutines');
           const pct = parseFloat(cell.percentagePr);
           const reps = parseInt(cell.repetitions, 10);
-          if (isNaN(pct) || pct < 1 || pct > 100) return t('validation.incompleteRoutines');
-          if (isNaN(reps) || reps < 1) return t('validation.incompleteRoutines');
+          if (isNaN(pct) || pct < 1 || pct > 100)
+            return t('validation.incompleteRoutines');
+          if (isNaN(reps) || reps < 1)
+            return t('validation.incompleteRoutines');
         }
       }
     }
@@ -150,11 +191,17 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
     if (currentStep === 1) {
       const error = validateStep1();
-      if (error) { setValidationError(error); return; }
+      if (error) {
+        setValidationError(error);
+        return;
+      }
       setCurrentStep(2);
     } else if (currentStep === 2) {
       const error = validateStep2();
-      if (error) { setValidationError(error); return; }
+      if (error) {
+        setValidationError(error);
+        return;
+      }
 
       const assignedDays = Object.entries(dayMovements)
         .filter(([, movementId]) => movementId !== null)
@@ -162,14 +209,21 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
       const nextConfigs = assignedDays.map(([day, movementId]) => {
         const existing = movementRoutineConfigs.find(
-          (config) => config.dayOfWeek === Number(day) && config.movementId === movementId,
+          (config) =>
+            config.dayOfWeek === Number(day) &&
+            config.movementId === movementId,
         );
-        return existing ?? {
-          movementId: movementId!,
-          movementName: movements.find((m) => m.id === movementId)!.name,
-          dayOfWeek: Number(day),
-          cells: {},
-        };
+        return (
+          existing ?? {
+            movementId: movementId!,
+            movementName: movements.find((m) => m.id === movementId)!.name,
+            dayOfWeek: Number(day),
+            setsPerWeek: Object.fromEntries(
+              Array.from({ length: lengthWeeks }, (_, i) => [i + 1, 3])
+            ),
+            cells: {},
+          }
+        );
       });
       setMovementRoutineConfigs(nextConfigs);
       setActiveRoutineTab(0);
@@ -183,35 +237,68 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
     else if (currentStep === 3) setCurrentStep(2);
   }
 
+  function updateConfigSetsPerWeek(
+    configIndex: number,
+    week: number,
+    updater: (prev: number) => number,
+  ) {
+    setMovementRoutineConfigs((prev) =>
+      prev.map((config, i) => {
+        if (i !== configIndex) return config;
+        const currentSets = config.setsPerWeek[week] ?? 3;
+        const newSets = Math.min(5, Math.max(1, updater(currentSets)));
+        const trimmedCells = Object.fromEntries(
+          Object.entries(config.cells).filter(([key]) => {
+            const [cellWeek, cellSet] = key.split('_').map(Number);
+            return cellWeek !== week || cellSet <= newSets;
+          }),
+        );
+        return {
+          ...config,
+          setsPerWeek: { ...config.setsPerWeek, [week]: newSets },
+          cells: trimmedCells,
+        };
+      }),
+    );
+  }
+
   async function handleSave() {
     const error = validateStep3();
-    if (error) { setValidationError(error); return; }
+    if (error) {
+      setValidationError(error);
+      return;
+    }
 
     setSubmitting(true);
     setValidationError(null);
 
-    const assignedMovements: CreatePlanMovementInput[] = movementRoutineConfigs.map((config) => ({
-      movementId: config.movementId,
-      dayOfWeek: config.dayOfWeek,
-    }));
+    const assignedMovements: CreatePlanMovementInput[] =
+      movementRoutineConfigs.map((config) => ({
+        movementId: config.movementId,
+        dayOfWeek: config.dayOfWeek,
+      }));
 
-    const routines: CreatePlanRoutineInput[] = movementRoutineConfigs.flatMap((config) =>
-      Object.entries(config.cells).map(([key, cell]) => {
-        const [week, setNumber] = key.split('_').map(Number);
-        return {
-          dayOfWeek: config.dayOfWeek,
-          week,
-          setNumber,
-          percentagePr: parseFloat(cell.percentagePr) / 100,
-          repetitions: parseInt(cell.repetitions, 10),
-        };
-      }),
+    const routines: CreatePlanRoutineInput[] = movementRoutineConfigs.flatMap(
+      (config) =>
+        Object.entries(config.cells).map(([key, cell]) => {
+          const [week, setNumber] = key.split('_').map(Number);
+          return {
+            dayOfWeek: config.dayOfWeek,
+            week,
+            setNumber,
+            percentagePr: parseFloat(cell.percentagePr) / 100,
+            repetitions: parseInt(cell.repetitions, 10),
+          };
+        }),
     );
 
     const planInput = {
       name: planName,
       description: planDescription || null,
       lengthWeeks,
+      slug: planSlug,
+      isSystem,
+      evaluationWeek,
       movements: assignedMovements,
       routines,
     };
@@ -221,7 +308,9 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
       : await createPlan(planInput);
 
     if (saveError) {
-      toast.error(isEditMode ? t('wizard.couldNotUpdate') : t('wizard.couldNotSave'));
+      toast.error(
+        isEditMode ? t('wizard.couldNotUpdate') : t('wizard.couldNotSave'),
+      );
       setSubmitting(false);
       return;
     }
@@ -255,8 +344,12 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
   ];
 
   const saveLabel = isEditMode
-    ? submitting ? t('wizard.updating') : t('wizard.update')
-    : submitting ? t('wizard.saving') : t('wizard.save');
+    ? submitting
+      ? t('wizard.updating')
+      : t('wizard.update')
+    : submitting
+      ? t('wizard.saving')
+      : t('wizard.save');
 
   return (
     <div className="rounded-xl border bg-card">
@@ -273,8 +366,8 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : isDone
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-muted text-muted-foreground'
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {stepNumber}
@@ -305,7 +398,17 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
               <input
                 type="text"
                 value={planName}
-                onChange={(e) => setPlanName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setPlanName(value);
+                  if (!slugManuallyEdited.current) {
+                    const autoSlug = value
+                      .toLowerCase()
+                      .replace(/\s+/g, '-')
+                      .replace(/[^a-z0-9-]/g, '');
+                    setPlanSlug(autoSlug);
+                  }
+                }}
                 placeholder={t('wizard.namePlaceholder')}
                 className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -326,46 +429,85 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                {t('wizard.lengthWeeksLabel')}
+                {t('wizard.slugLabel')}
               </label>
-              <div className="flex gap-2">
-                {([4, 5, 6] as const).map((weeks) => (
-                  <button
-                    key={weeks}
-                    onClick={() => setLengthWeeks(weeks)}
-                    className={`flex-1 h-10 rounded-lg text-sm font-medium border transition-colors ${
-                      lengthWeeks === weeks
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-background text-foreground border-input hover:bg-muted'
-                    }`}
-                  >
-                    {weeks} {t('weekCount', { count: weeks })}
-                  </button>
-                ))}
-              </div>
+              <input
+                type="text"
+                value={planSlug}
+                onChange={(e) => {
+                  slugManuallyEdited.current = true;
+                  setPlanSlug(e.target.value);
+                }}
+                placeholder="e.g. strength-block-a"
+                className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                {t('wizard.setsPerSessionLabel')}
+                {t('wizard.lengthWeeksLabel')}
               </label>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setSetsPerSession((prev) => Math.max(1, prev - 1))}
+                  onClick={() => {
+                    const next = Math.max(1, lengthWeeks - 1);
+                    setLengthWeeks(next);
+                    setEvaluationWeek((prev) => Math.min(prev, next));
+                  }}
                   className="w-10 h-10 rounded-lg border border-input bg-background text-lg font-semibold hover:bg-muted transition-colors"
                 >
                   −
                 </button>
-                <span className="w-6 text-center text-base font-semibold tabular-nums">
-                  {setsPerSession}
+                <span className="min-w-[4rem] text-center text-base font-semibold tabular-nums">
+                  {t('weekCount', { count: lengthWeeks })}
                 </span>
                 <button
-                  onClick={() => setSetsPerSession((prev) => Math.min(5, prev + 1))}
+                  onClick={() =>
+                    setLengthWeeks((prev) => Math.min(12, prev + 1))
+                  }
                   className="w-10 h-10 rounded-lg border border-input bg-background text-lg font-semibold hover:bg-muted transition-colors"
                 >
                   +
                 </button>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                {t('wizard.evaluationWeekLabel')}
+              </label>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() =>
+                    setEvaluationWeek((prev) => Math.max(1, prev - 1))
+                  }
+                  className="w-10 h-10 rounded-lg border border-input bg-background text-lg font-semibold hover:bg-muted transition-colors"
+                >
+                  −
+                </button>
+                <span className="w-6 text-center text-base font-semibold tabular-nums">
+                  {evaluationWeek}
+                </span>
+                <button
+                  onClick={() =>
+                    setEvaluationWeek((prev) => Math.min(lengthWeeks, prev + 1))
+                  }
+                  className="w-10 h-10 rounded-lg border border-input bg-background text-lg font-semibold hover:bg-muted transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="isSystem"
+                checked={isSystem}
+                onCheckedChange={(checked) => setIsSystem(checked === true)}
+              />
+              <label htmlFor="isSystem" className="text-sm font-medium">
+                {t('wizard.isSystemLabel')}
+              </label>
             </div>
           </div>
         )}
@@ -387,7 +529,8 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
                     onChange={(e) =>
                       setDayMovements((prev) => ({
                         ...prev,
-                        [day]: e.target.value === '' ? null : Number(e.target.value),
+                        [day]:
+                          e.target.value === '' ? null : Number(e.target.value),
                       }))
                     }
                     className="flex-1 h-10 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -427,17 +570,24 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
             {movementRoutineConfigs[activeRoutineTab] && (
               <PlanRoutineGrid
-                movementName={movementRoutineConfigs[activeRoutineTab].movementName}
+                movementName={
+                  movementRoutineConfigs[activeRoutineTab].movementName
+                }
                 lengthWeeks={lengthWeeks}
-                setsPerSession={setsPerSession}
+                setsPerWeek={movementRoutineConfigs[activeRoutineTab].setsPerWeek}
                 cells={movementRoutineConfigs[activeRoutineTab].cells}
                 onChange={(updatedCells) => {
                   setMovementRoutineConfigs((prev) =>
                     prev.map((config, index) =>
-                      index === activeRoutineTab ? { ...config, cells: updatedCells } : config,
+                      index === activeRoutineTab
+                        ? { ...config, cells: updatedCells }
+                        : config,
                     ),
                   );
                 }}
+                onSetsChange={(week, updater) =>
+                  updateConfigSetsPerWeek(activeRoutineTab, week, updater)
+                }
               />
             )}
           </div>
@@ -446,7 +596,9 @@ export function PlanCreationWizard({ movements, initialPlan, onClose }: PlanCrea
 
       {/* Validation error */}
       {validationError && (
-        <p className="text-sm text-destructive text-center px-4 pb-2">{validationError}</p>
+        <p className="text-sm text-destructive text-center px-4 pb-2">
+          {validationError}
+        </p>
       )}
 
       {/* Footer */}

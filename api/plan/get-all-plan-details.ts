@@ -25,6 +25,8 @@ interface PlanRow {
   description: string | null;
   length_weeks: number;
   is_system: boolean;
+  slug: string | null;
+  evaluation_week: number | null;
   plan_movements: PlanMovementRow[];
 }
 
@@ -49,6 +51,8 @@ export interface PlanDetail {
   description: string | null;
   lengthWeeks: number;
   isSystem: boolean;
+  slug: string | null;
+  evaluationWeek: number | null;
   planMovements: PlanMovementDetail[];
 }
 
@@ -59,6 +63,8 @@ function toPlanDetail(row: PlanRow): PlanDetail {
     description: row.description,
     lengthWeeks: row.length_weeks,
     isSystem: row.is_system,
+    slug: row.slug,
+    evaluationWeek: row.evaluation_week,
     planMovements: row.plan_movements.map((planMovement) => ({
       id: planMovement.id,
       movementId: planMovement.movement_id,
@@ -80,7 +86,7 @@ export async function getAllPlanDetails(): Promise<PlanDetail[]> {
   const { data, error } = await supabase
     .from('plans')
     .select(`
-      id, name, description, length_weeks, is_system,
+      id, name, description, length_weeks, is_system, slug, evaluation_week,
       plan_movements(
         id, day_of_week, movement_id,
         movements(name),

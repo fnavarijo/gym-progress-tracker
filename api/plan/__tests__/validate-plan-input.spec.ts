@@ -6,6 +6,9 @@ function makeInput(overrides: Partial<CreatePlanInput> = {}): CreatePlanInput {
     name: 'Test Plan',
     description: null,
     lengthWeeks: 2,
+    slug: 'test-plan',
+    isSystem: false,
+    evaluationWeek: 1,
     movements: [{ movementId: 1, dayOfWeek: 1 }],
     routines: [
       { dayOfWeek: 1, week: 1, setNumber: 1, percentagePr: 0.75, repetitions: 5 },
@@ -111,5 +114,40 @@ describe('validatePlanInput', () => {
       }),
     );
     expect(result).toBe('Plan must include at least one movement.');
+  });
+
+  it('returns error when slug is empty', () => {
+    expect(validatePlanInput(makeInput({ slug: '' }))).toBe('Plan slug is required.');
+  });
+
+  it('returns error when slug contains invalid characters', () => {
+    expect(validatePlanInput(makeInput({ slug: 'My Plan!' }))).toBe(
+      'Plan slug may only contain lowercase letters, numbers, and hyphens.',
+    );
+  });
+
+  it('returns null for valid slug with hyphens', () => {
+    expect(validatePlanInput(makeInput({ slug: 'strength-block-a' }))).toBeNull();
+  });
+
+  it('returns error when evaluationWeek is less than 1', () => {
+    expect(validatePlanInput(makeInput({ evaluationWeek: 0 }))).toBe(
+      'Evaluation week must be between 1 and 2.',
+    );
+  });
+
+  it('returns error when evaluationWeek exceeds lengthWeeks', () => {
+    expect(validatePlanInput(makeInput({ evaluationWeek: 3, lengthWeeks: 2 }))).toBe(
+      'Evaluation week must be between 1 and 2.',
+    );
+  });
+
+  it('returns null when evaluationWeek equals lengthWeeks (boundary)', () => {
+    expect(validatePlanInput(makeInput({ evaluationWeek: 2, lengthWeeks: 2 }))).toBeNull();
+  });
+
+  it('returns slug error before evaluationWeek error (priority order)', () => {
+    const result = validatePlanInput(makeInput({ slug: '', evaluationWeek: 99 }));
+    expect(result).toBe('Plan slug is required.');
   });
 });

@@ -16,7 +16,14 @@ export async function updatePlan(
   // Step 1: Update plan fields
   const { error: planError } = await supabase
     .from('plans')
-    .update({ name: input.name, description: input.description, length_weeks: input.lengthWeeks })
+    .update({
+      name: input.name,
+      description: input.description,
+      length_weeks: input.lengthWeeks,
+      slug: input.slug,
+      is_system: input.isSystem,
+      evaluation_week: input.evaluationWeek,
+    })
     .eq('id', planId);
 
   if (planError) return { error: planError.message };

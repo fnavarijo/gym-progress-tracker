@@ -219,7 +219,6 @@
       "descriptionLabel": "Descripción",
       "descriptionPlaceholder": "Descripción opcional",
       "lengthWeeksLabel": "Duración del ciclo",
-      "setsPerSessionLabel": "Sets por sesión",
       "monday": "Lunes",
       "tuesday": "Martes",
       "wednesday": "Miércoles",
@@ -229,10 +228,16 @@
       "couldNotSave": "No se pudo guardar el plan. Inténtalo de nuevo.",
       "couldNotUpdate": "No se pudo actualizar el plan. Inténtalo de nuevo.",
       "update": "Actualizar plan",
-      "updating": "Actualizando..."
+      "updating": "Actualizando...",
+      "slugLabel": "Slug",
+      "evaluationWeekLabel": "Semana de evaluación",
+      "isSystemLabel": "Plan del sistema"
     },
     "validation": {
       "nameRequired": "El nombre del plan es requerido.",
+      "slugRequired": "El slug del plan es requerido.",
+      "slugInvalid": "El slug solo puede contener letras minúsculas, números y guiones.",
+      "evaluationWeekInvalid": "La semana de evaluación debe estar dentro de la duración del ciclo.",
       "atLeastOneDay": "Asigna al menos un movimiento a un día.",
       "duplicateMovement": "Cada movimiento solo puede asignarse a un día.",
       "incompleteRoutines": "Completa todas las celdas de rutina antes de guardar."

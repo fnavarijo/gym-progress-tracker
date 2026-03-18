@@ -20,6 +20,9 @@ export interface CreatePlanInput {
   name: string;
   description: string | null;
   lengthWeeks: number;
+  slug: string;
+  isSystem: boolean;
+  evaluationWeek: number;
   movements: CreatePlanMovementInput[];
   routines: CreatePlanRoutineInput[];
 }
@@ -37,7 +40,9 @@ export async function createPlan(input: CreatePlanInput): Promise<{ error: strin
       name: input.name,
       description: input.description,
       length_weeks: input.lengthWeeks,
-      is_system: false,
+      slug: input.slug,
+      is_system: input.isSystem,
+      evaluation_week: input.evaluationWeek,
     })
     .select('id');
 

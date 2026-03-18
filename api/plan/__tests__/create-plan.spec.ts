@@ -9,6 +9,9 @@ const validInput: CreatePlanInput = {
   name: 'Strength Block A',
   description: 'Focus on big lifts',
   lengthWeeks: 1,
+  slug: 'strength-block-a',
+  isSystem: false,
+  evaluationWeek: 1,
   movements: [
     { movementId: 1, dayOfWeek: 1 },
     { movementId: 2, dayOfWeek: 3 },
@@ -72,7 +75,9 @@ describe('createPlan', () => {
       name: 'Strength Block A',
       description: 'Focus on big lifts',
       length_weeks: 1,
+      slug: 'strength-block-a',
       is_system: false,
+      evaluation_week: 1,
     });
   });
 

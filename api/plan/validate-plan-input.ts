@@ -18,5 +18,16 @@ export function validatePlanInput(input: CreatePlanInput): string | null {
     }
   }
 
+  if (!input.slug || input.slug.trim() === '') {
+    return 'Plan slug is required.';
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug)) {
+    return 'Plan slug may only contain lowercase letters, numbers, and hyphens.';
+  }
+
+  if (input.evaluationWeek < 1 || input.evaluationWeek > input.lengthWeeks) {
+    return `Evaluation week must be between 1 and ${input.lengthWeeks}.`;
+  }
+
   return null;
 }

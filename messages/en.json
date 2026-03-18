@@ -219,7 +219,6 @@
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Optional description",
       "lengthWeeksLabel": "Cycle Length",
-      "setsPerSessionLabel": "Sets per Session",
       "monday": "Monday",
       "tuesday": "Tuesday",
       "wednesday": "Wednesday",
@@ -229,10 +228,16 @@
       "couldNotSave": "Could not save plan. Please try again.",
       "couldNotUpdate": "Could not update plan. Please try again.",
       "update": "Update Plan",
-      "updating": "Updating..."
+      "updating": "Updating...",
+      "slugLabel": "Slug",
+      "evaluationWeekLabel": "Evaluation Week",
+      "isSystemLabel": "System plan"
     },
     "validation": {
       "nameRequired": "Plan name is required.",
+      "slugRequired": "Plan slug is required.",
+      "slugInvalid": "Plan slug may only contain lowercase letters, numbers, and hyphens.",
+      "evaluationWeekInvalid": "Evaluation week must be within the cycle length.",
       "atLeastOneDay": "Assign at least one movement to a day.",
       "duplicateMovement": "Each movement can only be assigned to one day.",
       "incompleteRoutines": "Fill in all routine cells before saving."

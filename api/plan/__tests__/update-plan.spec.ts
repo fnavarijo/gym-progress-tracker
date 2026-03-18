@@ -10,6 +10,9 @@ const validInput: CreatePlanInput = {
   name: 'Updated Plan',
   description: 'New description',
   lengthWeeks: 1,
+  slug: 'updated-plan',
+  isSystem: false,
+  evaluationWeek: 1,
   movements: [
     { movementId: 1, dayOfWeek: 1 },
     { movementId: 2, dayOfWeek: 3 },
@@ -89,6 +92,9 @@ describe('updatePlan', () => {
       name: 'Updated Plan',
       description: 'New description',
       length_weeks: 1,
+      slug: 'updated-plan',
+      is_system: false,
+      evaluation_week: 1,
     });
     const eqFn = updateFn.mock.results[0].value.eq;
     expect(eqFn).toHaveBeenCalledWith('id', 99);
