@@ -22,6 +22,7 @@ jobs:
         with:
           version: latest
 
-      - run: echo $TESTING
+      - run: echo "prueba"
+      - run: echo "$TESTING"
       - run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
       - run: supabase db push
