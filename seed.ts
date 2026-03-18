@@ -26,6 +26,22 @@ const main = async () => {
     },
   ]);
 
+  const { movement_types } = await seed.movement_types([
+    { name: 'upper' },
+    { name: 'lower' },
+  ]);
+
+  const upperTypeId = movement_types[0].id;
+  const lowerTypeId = movement_types[1].id;
+
+  await seed.movements([
+    { name: 'Bench Press', movement_type_id: upperTypeId },
+    { name: 'Strict Press', movement_type_id: upperTypeId },
+    { name: 'Back Squat', movement_type_id: lowerTypeId },
+    { name: 'Front Squat', movement_type_id: lowerTypeId },
+    { name: 'Deadlift', movement_type_id: lowerTypeId },
+  ]);
+
   process.exit();
 };
 
