@@ -14,6 +14,7 @@ jobs:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
       SUPABASE_PROJECT_ID: ${{ secrets.PRODUCTION_PROJECT_ID }}
+      OTHER_TEST: Defined?
 
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +24,8 @@ jobs:
           version: latest
 
       - run: echo "prueba"
+      - run: echo "${OTHER_TEST:=not-defined}"
       - run: echo "${TESTING:=not-defined}"
+      - run: echo "${env.TESTING:=not-defined}"
       - run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
       - run: supabase db push
