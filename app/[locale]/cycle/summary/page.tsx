@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import { getUserActiveCycle } from '@/api/cycle/get-user-active-cycle';
 import { getCycleWorkouts } from '@/api/workout/get-cycle-workouts';
+import { getPlanMovements } from '@/api/plan/get-plan-movements';
 import { CycleHeatmap } from '@/components/app/cycle-heatmap';
-import { CycleStats } from '@/components/app/cycle-stats';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
@@ -19,11 +19,14 @@ export default async function CycleSummaryPage({ params }: { params: Params }) {
   const cycle = await getUserActiveCycle();
   if (!cycle) notFound();
 
-  const workouts = await getCycleWorkouts(cycle.id);
+  const [workouts, planMovements] = await Promise.all([
+    getCycleWorkouts(cycle.id),
+    getPlanMovements(cycle.planId),
+  ]);
   const t = await getTranslations('Cycle.summary');
 
   return (
-    <div className="min-h-screen bg-background max-w-md mx-auto flex flex-col">
+    <div className="bg-background max-w-md mx-auto">
       <div className="bg-gradient-to-b from-primary/8 to-transparent">
         <div className="px-4 pt-8 pb-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
@@ -44,20 +47,16 @@ export default async function CycleSummaryPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      <main className="flex-1 overflow-y-auto pb-40">
-        <CycleStats
-          workouts={workouts}
-          currentWeek={cycle.currentWeek}
-          totalWeeks={cycle.totalWeeks}
-        />
+      <main className="pb-8">
         <CycleHeatmap
           workouts={workouts}
           totalWeeks={cycle.totalWeeks}
           currentWeek={cycle.currentWeek}
+          planMovements={planMovements}
         />
       </main>
 
-      <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
+      <div className="px-4 pb-8 pt-4 flex flex-col gap-2">
         <Button
           asChild
           variant="ghost"
