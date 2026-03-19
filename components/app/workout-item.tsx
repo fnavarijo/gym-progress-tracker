@@ -18,9 +18,8 @@ export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovem
     <div
       className={cn(
         'flex items-center gap-4 rounded-xl border bg-card px-4 py-3.5 transition-colors',
-        locked     && 'opacity-40 cursor-not-allowed',
-        completed  && 'opacity-60',
-        !locked && !completed && 'hover:bg-accent cursor-pointer',
+        locked  && 'opacity-40 cursor-not-allowed',
+        !locked && 'hover:bg-accent cursor-pointer',
       )}
     >
       <div
@@ -54,11 +53,11 @@ export function WorkoutItem({ movement, todayDayOfWeek }: { movement: CycleMovem
       </div>
       {completed && <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />}
       {locked    && <Lock className="w-4 h-4 text-muted-foreground shrink-0" />}
-      {!locked && !completed && <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />}
+      {!locked   && <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />}
     </div>
   );
 
-  if (!locked && !completed) {
+  if (!locked) {
     return <Link href={`/workout/movement/${cycleMovementId}`}>{content}</Link>;
   }
 

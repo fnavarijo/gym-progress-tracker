@@ -10,36 +10,18 @@ interface WeekProgress {
 
 export function WeekProgressCard({ weekProgress }: { weekProgress: WeekProgress }) {
   const { completed, total } = weekProgress;
-  const progressPct = (completed / total) * 100;
-  const remaining = total - completed;
+  const progressPct = total > 0 ? (completed / total) * 100 : 0;
   const t = useTranslations('WeekProgress');
 
   return (
     <CardContainer className="gap-4">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-            {t('thisWeek')}
-          </p>
-          <div className="flex items-baseline gap-1">
-            <span className="text-5xl font-bold tabular-nums text-foreground leading-none">
-              {completed}
-            </span>
-            <span className="text-xl text-muted-foreground font-medium">/ {total}</span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">{t('workoutsDone')}</p>
-        </div>
-        {remaining > 0 && (
-          <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-            {t('left', { count: remaining })}
-          </span>
-        )}
-        {remaining === 0 && (
-          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-            {t('complete')}
-          </span>
-        )}
+      <div className="flex items-baseline gap-1">
+        <span className="text-5xl font-bold tabular-nums text-foreground leading-none">
+          {completed}
+        </span>
+        <span className="text-xl text-muted-foreground font-medium">/ {total}</span>
       </div>
+      <p className="text-sm text-muted-foreground -mt-2">{t('workoutsThisWeek')}</p>
       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
         <div
           className="h-full rounded-full bg-primary transition-all duration-500"

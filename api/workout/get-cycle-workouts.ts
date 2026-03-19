@@ -5,6 +5,7 @@ interface WorkoutRow {
   week: number;
   completed_at: string | null;
   cycle_movements: {
+    id: number;
     cycle_id: number;
     movements: { name: string };
   };
@@ -12,6 +13,7 @@ interface WorkoutRow {
 
 export interface CycleWorkout {
   id: number;
+  cycleMovementId: number;
   week: number;
   name: string;
   completed: boolean;
@@ -20,11 +22,12 @@ export interface CycleWorkout {
 
 function toCycleWorkout(row: WorkoutRow): CycleWorkout {
   return {
-    id:          row.id,
-    week:        row.week,
-    name:        row.cycle_movements.movements.name,
-    completed:   row.completed_at !== null,
-    completedAt: row.completed_at,
+    id:              row.id,
+    cycleMovementId: row.cycle_movements.id,
+    week:            row.week,
+    name:            row.cycle_movements.movements.name,
+    completed:       row.completed_at !== null,
+    completedAt:     row.completed_at,
   };
 }
 
@@ -33,7 +36,7 @@ export async function getCycleWorkouts(cycleId: number): Promise<CycleWorkout[]>
 
   const { data, error } = await supabase
     .from('workouts')
-    .select('id, week, completed_at, cycle_movements!inner(cycle_id, movements!inner(name))')
+    .select('id, week, completed_at, cycle_movements!inner(id, cycle_id, movements!inner(name))')
     .eq('cycle_movements.cycle_id', cycleId)
     .order('week')
     .order('id');

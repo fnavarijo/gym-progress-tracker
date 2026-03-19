@@ -66,6 +66,7 @@ export interface WorkoutDetail {
   totalWeeks: number;
   weeklyCompleted: number;
   weeklyTotal: number;
+  completedAt: string | null;
   sets: WorkoutSetDetail[];
 }
 
@@ -97,6 +98,7 @@ function toDetail(
     totalWeeks: row.cycle_movements.cycles.plans.length_weeks,
     weeklyCompleted: weekWorkouts.filter((w) => w.completed_at !== null).length,
     weeklyTotal: weekWorkouts.length,
+    completedAt: row.completed_at,
     sets,
   };
 }

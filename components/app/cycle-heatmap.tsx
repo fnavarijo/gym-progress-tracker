@@ -88,7 +88,7 @@ export async function CycleHeatmap({ workouts, totalWeeks, currentWeek, planMove
                       <td key={week} className="py-1 px-0.5 text-center">
                         {isClickable ? (
                           <Link
-                            href={`/workout/movement/${workout.id}`}
+                            href={`/workout/movement/${workout.cycleMovementId}`}
                             className={cn(classes, 'block mx-auto hover:opacity-80 transition-opacity')}
                             title={`${name} — Week ${week}`}
                           />

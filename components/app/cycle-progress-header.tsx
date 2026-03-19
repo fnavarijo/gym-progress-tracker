@@ -17,14 +17,10 @@ function getGreetingKey(): 'goodMorning' | 'goodAfternoon' | 'goodEvening' {
 
 export function CycleProgressHeader({ cycleInfo }: { cycleInfo: CycleInfo }) {
   const { currentWeek, totalWeeks } = cycleInfo;
-  const progressPct = Math.round(((currentWeek - 1) / totalWeeks) * 100);
   const t = useTranslations('CycleProgress');
 
   return (
     <div className="px-4 pt-8 pb-4">
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-        {t('activeCycle')}
-      </p>
       <h1 className="text-4xl font-bold tracking-tight text-foreground leading-none">
         {t(getGreetingKey())}
       </h1>
@@ -33,7 +29,6 @@ export function CycleProgressHeader({ cycleInfo }: { cycleInfo: CycleInfo }) {
           <span className="w-1.5 h-1.5 rounded-full bg-primary-foreground/50" />
           {t('weekOf', { current: currentWeek, total: totalWeeks })}
         </span>
-        <span className="text-sm text-muted-foreground">{t('throughCycle', { pct: progressPct })}</span>
       </div>
     </div>
   );

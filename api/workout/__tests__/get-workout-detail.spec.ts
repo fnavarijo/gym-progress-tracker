@@ -100,6 +100,7 @@ describe('getWorkoutDetail', () => {
       totalWeeks:      6,
       weeklyCompleted: 1,
       weeklyTotal:     3,
+      completedAt:     null,
       sets: [
         { id: 11, setNumber: 1, weight: 158, percentage: 70, reps: 5, completedAt: null, usedWeight: null },
         { id: 10, setNumber: 2, weight: 170, percentage: 75, reps: 5, completedAt: '2026-01-05T10:00:00Z', usedWeight: null },
