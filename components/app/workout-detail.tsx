@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from 'sonner';
 import { CardContainer } from '@/components/ui/card-container';
@@ -379,19 +379,28 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               {t('sets')}
             </p>
 
-            {localSets.map((s) => {
+            {localSets.map((s, index) => {
               const isComplete = completedSets.has(s.setNumber);
               const loggedWeight = usedWeights[s.id];
               const isLogOpen = logInputSetId === s.id;
+              const isGroupStart =
+                index === 0 || s.percentage !== localSets[index - 1].percentage;
 
               return (
-                <div
-                  key={s.setNumber}
-                  className={cn(
-                    'rounded-xl border bg-card transition-colors overflow-hidden',
-                    isComplete ? 'border-primary bg-primary/5' : '',
+                <Fragment key={s.setNumber}>
+                  {isGroupStart && (
+                    <div className={cn('px-1 mb-1', index > 0 && 'mt-3')}>
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                        {s.percentage}%
+                      </span>
+                    </div>
                   )}
-                >
+                  <div
+                    className={cn(
+                      'rounded-xl border bg-card transition-colors overflow-hidden',
+                      isComplete ? 'border-primary bg-primary/5' : '',
+                    )}
+                  >
                   {/* Main row — tapping completes the set */}
                   <div
                     className={cn(
@@ -434,8 +443,6 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-xs text-muted-foreground">{s.percentage}%</span>
-                        <span className="text-xs text-muted-foreground">·</span>
                         <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
                       </div>
                     </div>
@@ -527,7 +534,8 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                       </div>
                     </div>
                   )}
-                </div>
+                  </div>
+                </Fragment>
               );
             })}
           </>
