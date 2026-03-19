@@ -3,11 +3,12 @@ import { getCycleMovementsForWeek } from '@/api/workout/get-cycle-movements-for-
 import { CycleProgressHeader } from '@/components/app/cycle-progress-header';
 import { WeekProgressCard } from '@/components/app/week-progress-card';
 import { WorkoutList } from '@/components/app/workout-list';
+import { TodayCta } from '@/components/app/today-cta';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
 import { LogoutButton } from '@/components/logout-button';
 import { LocaleSwitcher } from '@/components/app/locale-switcher';
 import { PwaInstallButton } from '@/components/app/pwa-install-button';
-import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 
 interface WorkoutProgressProps {
@@ -18,18 +19,10 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
   const movements = await getCycleMovementsForWeek(cycle.id, cycle.planId, cycle.currentWeek);
   const t = await getTranslations('CycleProgress');
 
-  // ISO weekday: 1 = Monday … 7 = Sunday
-  const jsDay = new Date().getDay();
-  const todayDayOfWeek = jsDay === 0 ? 7 : jsDay;
-
   const weekProgress = {
     completed: movements.filter((m) => m.completed).length,
     total: movements.length,
   };
-
-  const todayWorkouts        = movements.filter((m) => m.dayOfWeek === todayDayOfWeek);
-  const firstIncompleteToday = todayWorkouts.find((m) => !m.completed);
-  const todayAllDone         = todayWorkouts.length > 0 && todayWorkouts.every((m) => m.completed);
 
   const cycleInfo = {
     currentWeek: cycle.currentWeek,
@@ -50,21 +43,11 @@ export async function WorkoutProgress({ cycle }: WorkoutProgressProps) {
           <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             {t('thisWeeksLifts')}
           </h2>
-          <WorkoutList movements={movements} todayDayOfWeek={todayDayOfWeek} />
+          <WorkoutList movements={movements} />
         </section>
       </main>
       <div className="sticky bottom-0 px-4 pb-6 pt-10 flex flex-col gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
-        {firstIncompleteToday ? (
-          <Button asChild className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
-            <Link href={`/workout/movement/${firstIncompleteToday.cycleMovementId}`}>
-              {t('startTodaysLift')}
-            </Link>
-          </Button>
-        ) : (
-          <Button disabled className="w-full rounded-xl h-14 text-base font-semibold" size="lg">
-            {todayAllDone ? t('todaysLiftDone') : t('noLiftScheduled')}
-          </Button>
-        )}
+        <TodayCta movements={movements} />
         <Button
           asChild
           variant="ghost"
