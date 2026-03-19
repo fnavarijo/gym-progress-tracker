@@ -77,6 +77,7 @@ export interface WorkoutDetail {
 function toDetail(
   row: WorkoutRow,
   weekWorkouts: WeekWorkoutRow[],
+  weeklyTotal: number,
 ): WorkoutDetail {
   const sets: WorkoutSetDetail[] = [...row.workout_sets]
     .sort((a, b) => a.set_number - b.set_number)
@@ -97,7 +98,7 @@ function toDetail(
     week: row.week,
     totalWeeks: row.cycle_movements.cycles.plans.length_weeks,
     weeklyCompleted: weekWorkouts.filter((w) => w.completed_at !== null).length,
-    weeklyTotal: weekWorkouts.length,
+    weeklyTotal,
     completedAt: row.completed_at,
     sets,
   };
@@ -151,5 +152,12 @@ export async function getWorkoutDetail(
 
   if (weekError) throw weekError;
 
-  return toDetail(workoutData, (weekData ?? []) as WeekWorkoutRow[]);
+  const { count: cycleMovementCount, error: countError } = await supabase
+    .from('cycle_movements')
+    .select('*', { count: 'exact', head: true })
+    .eq('cycle_id', cycleId);
+
+  if (countError) throw countError;
+
+  return toDetail(workoutData, (weekData ?? []) as WeekWorkoutRow[], cycleMovementCount ?? 0);
 }

@@ -331,47 +331,56 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
               {t('sets')}
             </p>
 
-            {localSets.map((s) => (
-              <div
-                key={s.setNumber}
-                className="rounded-xl border border-primary bg-primary/5 overflow-hidden"
-              >
-                <div className="flex items-center gap-4 px-4 py-4">
-                  <div className="w-1 self-stretch rounded-full shrink-0 bg-primary" />
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-primary">
-                    <Check className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-2.5">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold tabular-nums opacity-50">{s.weight}</span>
-                        <span className="text-sm text-muted-foreground">{t('lb')}</span>
-                      </div>
-                      <span className="text-lg text-muted-foreground/40 font-light">×</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold tabular-nums opacity-50">{s.reps}</span>
-                        <span className="text-sm text-muted-foreground">reps</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-xs text-muted-foreground">{s.percentage}%</span>
-                      <span className="text-xs text-muted-foreground">·</span>
-                      <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
-                    </div>
-                  </div>
-                  {s.usedWeight != null ? (
-                    <div className="flex flex-col items-end shrink-0">
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
-                        {t('liftedLabel')}
-                      </span>
-                      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                        {s.usedWeight} {t('lb')}
+            {localSets.map((s, index) => {
+              const isGroupStart =
+                index === 0 || s.percentage !== localSets[index - 1].percentage;
+
+              return (
+                <Fragment key={s.setNumber}>
+                  {isGroupStart && (
+                    <div className={cn('px-1 mb-1', index > 0 && 'mt-3')}>
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                        {s.percentage}%
                       </span>
                     </div>
-                  ) : null}
-                </div>
-              </div>
-            ))}
+                  )}
+                  <div className="rounded-xl border border-primary bg-primary/5 overflow-hidden">
+                    <div className="flex items-center gap-4 px-4 py-4">
+                      <div className="w-1 self-stretch rounded-full shrink-0 bg-primary" />
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-primary">
+                        <Check className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-baseline gap-2.5">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-bold tabular-nums opacity-50">{s.weight}</span>
+                            <span className="text-sm text-muted-foreground">{t('lb')}</span>
+                          </div>
+                          <span className="text-lg text-muted-foreground/40 font-light">×</span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-bold tabular-nums opacity-50">{s.reps}</span>
+                            <span className="text-sm text-muted-foreground">reps</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
+                        </div>
+                      </div>
+                      {s.usedWeight != null ? (
+                        <div className="flex flex-col items-end shrink-0">
+                          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+                            {t('liftedLabel')}
+                          </span>
+                          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                            {s.usedWeight} {t('lb')}
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </Fragment>
+              );
+            })}
           </>
         ) : (
           <>
