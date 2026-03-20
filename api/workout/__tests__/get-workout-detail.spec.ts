@@ -10,11 +10,15 @@ function makeMockSupabase({
   workoutError,
   weekData,
   weekError,
+  cycleMovementCount = 5,
+  countError = null,
 }: {
   workoutData: unknown;
   workoutError: unknown;
   weekData: unknown;
   weekError: unknown;
+  cycleMovementCount?: number | null;
+  countError?: unknown;
 }) {
   // First .from() call: detail query → .select().eq(id).maybeSingle()
   const maybeSingle  = jest.fn().mockResolvedValue({ data: workoutData, error: workoutError });
@@ -26,11 +30,16 @@ function makeMockSupabase({
   const weekFirstEq  = jest.fn().mockReturnValue({ eq: weekSecondEq });
   const weekSelect   = jest.fn().mockReturnValue({ eq: weekFirstEq });
 
+  // Third .from() call: cycle_movements count → .select('*', { count: 'exact', head: true }).eq(cycleId)
+  const countEq     = jest.fn().mockResolvedValue({ count: cycleMovementCount, error: countError });
+  const countSelect = jest.fn().mockReturnValue({ eq: countEq });
+
   const from = jest.fn()
     .mockReturnValueOnce({ select: detailSelect })
-    .mockReturnValueOnce({ select: weekSelect });
+    .mockReturnValueOnce({ select: weekSelect })
+    .mockReturnValueOnce({ select: countSelect });
 
-  return { from, _mocks: { maybeSingle, detailEq, weekFirstEq, weekSecondEq } };
+  return { from, _mocks: { maybeSingle, detailEq, weekFirstEq, weekSecondEq, countEq } };
 }
 
 /** Workout row with sets intentionally out of order to test sorting */
@@ -99,7 +108,8 @@ describe('getWorkoutDetail', () => {
       week:            1,
       totalWeeks:      6,
       weeklyCompleted: 1,
-      weeklyTotal:     3,
+      weeklyTotal:     5,
+      completedAt:     null,
       sets: [
         { id: 11, setNumber: 1, weight: 158, percentage: 70, reps: 5, completedAt: null, usedWeight: null },
         { id: 10, setNumber: 2, weight: 170, percentage: 75, reps: 5, completedAt: '2026-01-05T10:00:00Z', usedWeight: null },
@@ -158,7 +168,7 @@ describe('getWorkoutDetail', () => {
     const result = await getWorkoutDetail(5);
 
     expect(result!.weeklyCompleted).toBe(1);
-    expect(result!.weeklyTotal).toBe(3);
+    expect(result!.weeklyTotal).toBe(5);
   });
 
   it('returns null when workout is not found', async () => {
@@ -178,6 +188,60 @@ describe('getWorkoutDetail', () => {
     const mock = makeMockSupabase({
       workoutData: null, workoutError: pgError,
       weekData: null,    weekError: null,
+    });
+    mockCreateClient.mockResolvedValue(mock as never);
+
+    await expect(getWorkoutDetail(5)).rejects.toEqual(pgError);
+  });
+
+  it('maps weight as null when scheduled_weight is null (evaluation sets)', async () => {
+    const evalRow = {
+      ...workoutRow,
+      workout_sets: [
+        {
+          id: 20,
+          set_number: 1,
+          scheduled_weight: null,
+          used_weight: '185.00',
+          completed_at: '2026-01-05T10:00:00Z',
+          plan_routines: { percentage_pr: '0.8000', repetitions: 1 },
+        },
+      ],
+    };
+    const mock = makeMockSupabase({
+      workoutData: evalRow, workoutError: null,
+      weekData: [], weekError: null,
+    });
+    mockCreateClient.mockResolvedValue(mock as never);
+
+    const result = await getWorkoutDetail(5);
+
+    expect(result!.sets[0].weight).toBeNull();
+    expect(result!.sets[0].usedWeight).toBe(185);
+  });
+
+  it('weeklyTotal uses cycle_movements count, not the number of started workouts', async () => {
+    // Only 2 workouts have been started this week, but the plan has 5 movements.
+    const mock = makeMockSupabase({
+      workoutData: workoutRow, workoutError: null,
+      weekData: [{ id: 5, completed_at: null }, { id: 6, completed_at: '2026-01-05T09:00:00Z' }],
+      weekError: null,
+      cycleMovementCount: 5,
+    });
+    mockCreateClient.mockResolvedValue(mock as never);
+
+    const result = await getWorkoutDetail(5);
+
+    expect(result!.weeklyTotal).toBe(5);
+    expect(result!.weeklyCompleted).toBe(1);
+  });
+
+  it('throws on DB error in the cycle_movements count query', async () => {
+    const pgError = { message: 'permission denied', code: '42501' };
+    const mock = makeMockSupabase({
+      workoutData: workoutRow, workoutError: null,
+      weekData: weekWorkouts,  weekError: null,
+      cycleMovementCount: null, countError: pgError,
     });
     mockCreateClient.mockResolvedValue(mock as never);
 

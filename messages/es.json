@@ -99,10 +99,7 @@
     "installApp": "Instalar app"
   },
   "WeekProgress": {
-    "thisWeek": "Esta semana",
-    "workoutsDone": "entrenamientos completados",
-    "left": "{count} restantes",
-    "complete": "¡Completo!"
+    "workoutsThisWeek": "entrenamientos esta semana"
   },
   "Cycle": {
     "new": {
@@ -134,11 +131,8 @@
       "weekOf": "Semana {current} de {total}",
       "daysRemaining": "{days}d restantes",
       "backToDashboard": "Volver al inicio",
-      "cycleProgress": "Progreso del ciclo",
-      "workoutsDone": "entrenamientos completados",
-      "weekStreak": "{count} semana en racha",
-      "complete": "% completado",
       "consistencyHeatmap": "Mapa de consistencia",
+      "weekSummaryLabel": "Semana",
       "legendDone": "Completado",
       "legendInProgress": "En progreso",
       "legendMissed": "Perdido",
@@ -194,7 +188,12 @@
     "couldNotFinish": "No se pudo finalizar el entrenamiento. Inténtalo de nuevo.",
     "couldNotUpdatePr": "No se pudo actualizar el PR. Inténtalo de nuevo.",
     "couldNotSaveWeight": "No se pudo guardar el peso. Inténtalo de nuevo.",
-    "logAndBuild": "Registra tus sets, sigue tu progreso y desarrolla fuerza semana tras semana."
+    "logAndBuild": "Registra tus sets, sigue tu progreso y desarrolla fuerza semana tras semana.",
+    "completed": "Completado",
+    "scheduledLabel": "Programado",
+    "liftedLabel": "Levantado",
+    "yourOneRm": "Tu 1RM",
+    "oneRmFromLastSet": "Prellenado del último set — edita si es necesario"
   },
   "Plans": {
     "title": "Planes de entrenamiento",

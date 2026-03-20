@@ -1,4 +1,5 @@
 import { CycleWorkout } from '@/api/workout/get-cycle-workouts';
+import { PlanMovement } from '@/api/plan/get-plan-movements';
 import { cn } from '@/lib/utils';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
@@ -7,11 +8,11 @@ interface Props {
   workouts: CycleWorkout[];
   totalWeeks: number;
   currentWeek: number;
+  planMovements: PlanMovement[];
 }
 
 function cellClasses(workout: CycleWorkout | undefined, week: number, currentWeek: number): string {
   if (!workout) {
-    // No workout scheduled for this cell
     if (week > currentWeek) return 'bg-muted/50';
     return 'bg-muted-foreground/20';
   }
@@ -21,18 +22,19 @@ function cellClasses(workout: CycleWorkout | undefined, week: number, currentWee
   return 'bg-muted-foreground/20';
 }
 
-export async function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props) {
+function weekSummaryClass(completedCount: number, total: number, week: number, currentWeek: number): string {
+  if (completedCount === 0) {
+    if (week > currentWeek) return 'bg-muted/50';
+    return 'bg-muted-foreground/20';
+  }
+  if (completedCount >= total) return 'bg-primary';
+  return 'bg-primary/40';
+}
+
+export async function CycleHeatmap({ workouts, totalWeeks, currentWeek, planMovements }: Props) {
   const t = await getTranslations('Cycle.summary');
 
-  // Unique movement names in order of first appearance
-  const movements: string[] = [];
-  const seen = new Set<string>();
-  for (const workout of workouts) {
-    if (!seen.has(workout.name)) {
-      seen.add(workout.name);
-      movements.push(workout.name);
-    }
-  }
+  const movements = planMovements.map((m) => m.name);
 
   // Lookup: movement name → week → CycleWorkout
   const lookup = new Map<string, Map<number, CycleWorkout>>();
@@ -66,7 +68,7 @@ export async function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props)
           </thead>
           <tbody>
             {movements.map((name) => {
-              const weekMap = lookup.get(name)!;
+              const weekMap = lookup.get(name) ?? new Map<number, CycleWorkout>();
               return (
                 <tr key={name}>
                   <td className="pr-3 py-1">
@@ -86,7 +88,7 @@ export async function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props)
                       <td key={week} className="py-1 px-0.5 text-center">
                         {isClickable ? (
                           <Link
-                            href={`/workout/movement/${workout.id}`}
+                            href={`/workout/movement/${workout.cycleMovementId}`}
                             className={cn(classes, 'block mx-auto hover:opacity-80 transition-opacity')}
                             title={`${name} — Week ${week}`}
                           />
@@ -99,6 +101,29 @@ export async function CycleHeatmap({ workouts, totalWeeks, currentWeek }: Props)
                 </tr>
               );
             })}
+            {/* Week summary row */}
+            <tr>
+              <td className="pr-3 pt-3 pb-1 border-t border-border">
+                <span className="text-xs font-semibold text-foreground truncate block max-w-[90px]">
+                  {t('weekSummaryLabel')}
+                </span>
+              </td>
+              {weeks.map((week) => {
+                const completedThisWeek = workouts.filter(
+                  (workout) => workout.week === week && workout.completed,
+                ).length;
+                return (
+                  <td key={week} className="pt-3 pb-1 px-0.5 text-center border-t border-border">
+                    <div
+                      className={cn(
+                        'w-8 h-8 rounded-md mx-auto',
+                        weekSummaryClass(completedThisWeek, planMovements.length, week, currentWeek),
+                      )}
+                    />
+                  </td>
+                );
+              })}
+            </tr>
           </tbody>
         </table>
 

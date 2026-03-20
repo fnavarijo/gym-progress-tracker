@@ -99,10 +99,7 @@
     "installApp": "Install App"
   },
   "WeekProgress": {
-    "thisWeek": "This Week",
-    "workoutsDone": "workouts done",
-    "left": "{count} left",
-    "complete": "Complete!"
+    "workoutsThisWeek": "workouts this week"
   },
   "Cycle": {
     "new": {
@@ -134,11 +131,8 @@
       "weekOf": "Week {current} of {total}",
       "daysRemaining": "{days}d remaining",
       "backToDashboard": "Back to Dashboard",
-      "cycleProgress": "Cycle Progress",
-      "workoutsDone": "workouts done",
-      "weekStreak": "{count} week streak",
-      "complete": "% complete",
       "consistencyHeatmap": "Consistency Heatmap",
+      "weekSummaryLabel": "Week",
       "legendDone": "Done",
       "legendInProgress": "In progress",
       "legendMissed": "Missed",
@@ -194,7 +188,12 @@
     "couldNotFinish": "Could not finish workout. Please try again.",
     "couldNotUpdatePr": "Could not update PR. Please try again.",
     "couldNotSaveWeight": "Could not save weight. Please try again.",
-    "logAndBuild": "Log your sets, track your progress, and build strength week by week."
+    "logAndBuild": "Log your sets, track your progress, and build strength week by week.",
+    "completed": "Completed",
+    "scheduledLabel": "Scheduled",
+    "liftedLabel": "Lifted",
+    "yourOneRm": "Your 1RM",
+    "oneRmFromLastSet": "Pre-filled from last set — edit if needed"
   },
   "Plans": {
     "title": "Training Plans",

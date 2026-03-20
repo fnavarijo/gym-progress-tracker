@@ -20,19 +20,19 @@ const workoutRows = [
     id: 1,
     week: 1,
     completed_at: '2026-01-05T10:00:00Z',
-    cycle_movements: { cycle_id: 10, movements: { name: 'Back Squat' } },
+    cycle_movements: { id: 101, cycle_id: 10, movements: { name: 'Back Squat' } },
   },
   {
     id: 2,
     week: 1,
     completed_at: null,
-    cycle_movements: { cycle_id: 10, movements: { name: 'Deadlift' } },
+    cycle_movements: { id: 102, cycle_id: 10, movements: { name: 'Deadlift' } },
   },
   {
     id: 3,
     week: 2,
     completed_at: '2026-01-12T10:00:00Z',
-    cycle_movements: { cycle_id: 10, movements: { name: 'Back Squat' } },
+    cycle_movements: { id: 101, cycle_id: 10, movements: { name: 'Back Squat' } },
   },
 ];
 
@@ -48,9 +48,9 @@ describe('getCycleWorkouts', () => {
     const result = await getCycleWorkouts(10);
 
     expect(result).toEqual([
-      { id: 1, week: 1, name: 'Back Squat', completed: true,  completedAt: '2026-01-05T10:00:00Z' },
-      { id: 2, week: 1, name: 'Deadlift',   completed: false, completedAt: null },
-      { id: 3, week: 2, name: 'Back Squat', completed: true,  completedAt: '2026-01-12T10:00:00Z' },
+      { id: 1, cycleMovementId: 101, week: 1, name: 'Back Squat', completed: true,  completedAt: '2026-01-05T10:00:00Z' },
+      { id: 2, cycleMovementId: 102, week: 1, name: 'Deadlift',   completed: false, completedAt: null },
+      { id: 3, cycleMovementId: 101, week: 2, name: 'Back Squat', completed: true,  completedAt: '2026-01-12T10:00:00Z' },
     ]);
   });
 
@@ -60,7 +60,7 @@ describe('getCycleWorkouts', () => {
         id: 5,
         week: 1,
         completed_at: '2026-01-10T08:00:00Z',
-        cycle_movements: { cycle_id: 1, movements: { name: 'Strict Press' } },
+        cycle_movements: { id: 201, cycle_id: 1, movements: { name: 'Strict Press' } },
       },
     ];
     const mockSupabase = makeMockSupabase({ data: rows, error: null });
@@ -78,7 +78,7 @@ describe('getCycleWorkouts', () => {
         id: 6,
         week: 2,
         completed_at: null,
-        cycle_movements: { cycle_id: 2, movements: { name: 'Front Squat' } },
+        cycle_movements: { id: 202, cycle_id: 2, movements: { name: 'Front Squat' } },
       },
     ];
     const mockSupabase = makeMockSupabase({ data: rows, error: null });

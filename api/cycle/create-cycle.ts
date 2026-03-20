@@ -16,7 +16,7 @@ export async function createCycle({
   const supabase = await createClient();
 
   const { error } = await supabase.rpc('create_cycle_with_workouts', {
-    p_plan_id: 1,
+    p_plan_id: 1, // TODO: We need to create this based on what the user picks
     p_start_date: date,
     p_pr_by_movement: prs,
     p_round_increment: 5,
