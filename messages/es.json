@@ -191,7 +191,9 @@
     "logAndBuild": "Registra tus sets, sigue tu progreso y desarrolla fuerza semana tras semana.",
     "completed": "Completado",
     "scheduledLabel": "Programado",
-    "liftedLabel": "Levantado"
+    "liftedLabel": "Levantado",
+    "yourOneRm": "Tu 1RM",
+    "oneRmFromLastSet": "Prellenado del último set — edita si es necesario"
   },
   "Plans": {
     "title": "Planes de entrenamiento",

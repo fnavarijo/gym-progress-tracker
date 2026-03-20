@@ -194,6 +194,32 @@ describe('getWorkoutDetail', () => {
     await expect(getWorkoutDetail(5)).rejects.toEqual(pgError);
   });
 
+  it('maps weight as null when scheduled_weight is null (evaluation sets)', async () => {
+    const evalRow = {
+      ...workoutRow,
+      workout_sets: [
+        {
+          id: 20,
+          set_number: 1,
+          scheduled_weight: null,
+          used_weight: '185.00',
+          completed_at: '2026-01-05T10:00:00Z',
+          plan_routines: { percentage_pr: '0.8000', repetitions: 1 },
+        },
+      ],
+    };
+    const mock = makeMockSupabase({
+      workoutData: evalRow, workoutError: null,
+      weekData: [], weekError: null,
+    });
+    mockCreateClient.mockResolvedValue(mock as never);
+
+    const result = await getWorkoutDetail(5);
+
+    expect(result!.sets[0].weight).toBeNull();
+    expect(result!.sets[0].usedWeight).toBe(185);
+  });
+
   it('weeklyTotal uses cycle_movements count, not the number of started workouts', async () => {
     // Only 2 workouts have been started this week, but the plan has 5 movements.
     const mock = makeMockSupabase({

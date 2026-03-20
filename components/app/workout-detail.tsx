@@ -46,14 +46,19 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
   const [finishing, setFinishing] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [prInput, setPrInput] = useState('');
+  const [oneRMInput, setOneRMInput] = useState('');
+  const [filledSets, setFilledSets] = useState<Set<number>>(new Set());
 
-  const isCompleted = workout.completedAt !== null && !isEvaluation;
+  const lastEvalSet = localSets.reduce((a, b) => (b.setNumber > a.setNumber ? b : a), localSets[0]);
+  const effectiveOneRM = oneRMInput !== '' ? oneRMInput : (setWeights[lastEvalSet?.setNumber] ?? '');
+
+  const isCompleted = workout.completedAt !== null;
 
   const allComplete = isEvaluation
     ? localSets.every((s) => {
         const v = setWeights[s.setNumber];
         return v !== undefined && v.trim() !== '' && Number(v) > 0;
-      })
+      }) && effectiveOneRM !== '' && Number(effectiveOneRM) > 0
     : completedSets.size === localSets.length;
 
   const toggleSet = async (set: WorkoutSetDetail) => {
@@ -99,9 +104,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
         }
       }
 
-      const lastSet = workout.sets.reduce((a, b) => (b.setNumber > a.setNumber ? b : a));
-      const lastWeight = parseFloat(setWeights[lastSet.setNumber]);
-      const { error: evalError } = await createEvaluationResult(cycleMovementId, lastWeight);
+      const { error: evalError } = await createEvaluationResult(cycleMovementId, parseFloat(effectiveOneRM));
       if (evalError) {
         setFinishing(false);
         toast.error(t('couldNotSaveEval'));
@@ -270,7 +273,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
       </div>
 
       <main className="flex-1 overflow-y-auto px-4 md:px-6 pb-24 md:pb-8 flex flex-col gap-3 mt-4">
-        {!isEvaluation && localOneRM !== null && (
+        {localOneRM !== null && (!isEvaluation || isCompleted) && (
           <CardContainer className="gap-3">
             <div className="flex justify-between items-start">
               <div>
@@ -289,43 +292,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
           </CardContainer>
         )}
 
-        {isEvaluation ? (
-          <>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
-              {t('evaluationSets')}
-            </p>
-
-            {localSets.map((s) => (
-              <div
-                key={s.setNumber}
-                className="rounded-xl border bg-card px-4 py-4 flex flex-col gap-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    {t('set', { number: s.setNumber })}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {s.percentage}% · ×{s.reps} reps
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    inputMode="decimal"
-                    min={1}
-                    placeholder="0"
-                    value={setWeights[s.setNumber] ?? ''}
-                    onChange={(e) =>
-                      setSetWeights((prev) => ({ ...prev, [s.setNumber]: e.target.value }))
-                    }
-                    className="text-2xl font-bold tabular-nums h-12 rounded-xl text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  />
-                  <span className="text-base font-medium text-muted-foreground shrink-0">{t('lb')}</span>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : isCompleted ? (
+        {isCompleted ? (
           <>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
               {t('sets')}
@@ -351,20 +318,24 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                         <Check className="w-4 h-4 text-primary-foreground" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-baseline gap-2.5">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold tabular-nums opacity-50">{s.weight}</span>
-                            <span className="text-sm text-muted-foreground">{t('lb')}</span>
+                        {s.weight != null && (
+                          <div className="flex items-baseline gap-2.5">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-3xl font-bold tabular-nums opacity-50">{s.weight}</span>
+                              <span className="text-sm text-muted-foreground">{t('lb')}</span>
+                            </div>
+                            <span className="text-lg text-muted-foreground/40 font-light">×</span>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-3xl font-bold tabular-nums opacity-50">{s.reps}</span>
+                              <span className="text-sm text-muted-foreground">reps</span>
+                            </div>
                           </div>
-                          <span className="text-lg text-muted-foreground/40 font-light">×</span>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold tabular-nums opacity-50">{s.reps}</span>
-                            <span className="text-sm text-muted-foreground">reps</span>
+                        )}
+                        {s.weight != null && (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
-                        </div>
+                        )}
                       </div>
                       {s.usedWeight != null ? (
                         <div className="flex flex-col items-end shrink-0">
@@ -381,6 +352,100 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                 </Fragment>
               );
             })}
+          </>
+        ) : isEvaluation ? (
+          <>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-2 mb-1">
+              {t('evaluationSets')}
+            </p>
+
+            {localSets.map((s) => {
+              const isFilled = filledSets.has(s.setNumber);
+              const currentValue = setWeights[s.setNumber] ?? '';
+
+              return (
+                <div
+                  key={s.setNumber}
+                  className={cn(
+                    'rounded-xl border overflow-hidden transition-colors',
+                    isFilled ? 'bg-muted/30' : 'bg-card',
+                  )}
+                >
+                  <div className="flex items-center gap-4 px-4 py-4">
+                    <div
+                      className={cn(
+                        'w-1 self-stretch rounded-full shrink-0',
+                        isFilled ? 'bg-primary' : 'bg-muted-foreground/30',
+                      )}
+                    />
+                    <div className="flex-1 flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                          {t('set', { number: s.setNumber })}
+                          {isFilled && <Check className="w-3 h-3 text-primary" />}
+                        </span>
+                        <div className="flex flex-col items-end">
+                          <span className="text-sm font-semibold text-foreground">×{s.reps} reps</span>
+                          <span className="text-xs text-muted-foreground">{s.percentage}%</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          min={1}
+                          placeholder=""
+                          value={currentValue}
+                          onChange={(e) =>
+                            setSetWeights((prev) => ({ ...prev, [s.setNumber]: e.target.value }))
+                          }
+                          onBlur={() => {
+                            if (currentValue !== '' && Number(currentValue) > 0) {
+                              setFilledSets((prev) => new Set(prev).add(s.setNumber));
+                            } else {
+                              setFilledSets((prev) => {
+                                const next = new Set(prev);
+                                next.delete(s.setNumber);
+                                return next;
+                              });
+                            }
+                          }}
+                          className="text-2xl font-bold tabular-nums h-12 rounded-xl text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        />
+                        <span className="text-base font-medium text-muted-foreground shrink-0">{t('lb')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="rounded-xl border border-primary bg-primary/5 overflow-hidden">
+              <div className="flex items-center gap-4 px-4 py-4">
+                <div className="w-1 self-stretch rounded-full shrink-0 bg-primary" />
+                <div className="flex-1 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      <Trophy className="w-3.5 h-3.5 text-primary" />
+                      {t('yourOneRm')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      min={1}
+                      placeholder={setWeights[lastEvalSet?.setNumber] ?? ''}
+                      value={oneRMInput}
+                      onChange={(e) => setOneRMInput(e.target.value)}
+                      className="text-2xl font-bold tabular-nums h-12 rounded-xl text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
+                    <span className="text-base font-medium text-muted-foreground shrink-0">{t('lb')}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground -mt-1">{t('oneRmFromLastSet')}</p>
+                </div>
+              </div>
+            </div>
           </>
         ) : (
           <>
@@ -452,7 +517,7 @@ export function WorkoutDetailView({ workout, isEvaluation, cycleMovementId }: Wo
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight - 45) / 2) })}</span>
+                        <span className="text-xs text-muted-foreground">{t('lbPerSide', { value: Math.max(0, (s.weight! - 45) / 2) })}</span>
                       </div>
                     </div>
 

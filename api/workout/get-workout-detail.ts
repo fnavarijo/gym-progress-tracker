@@ -51,7 +51,7 @@ interface WeekWorkoutRow {
 export interface WorkoutSetDetail {
   id: number;
   setNumber: number;
-  weight: number;
+  weight: number | null;
   percentage: number;
   reps: number;
   completedAt: string | null;
@@ -84,7 +84,7 @@ function toDetail(
     .map((s) => ({
       id: s.id,
       setNumber: s.set_number,
-      weight: parseFloat(s.scheduled_weight),
+      weight: s.scheduled_weight != null ? parseFloat(s.scheduled_weight) : null,
       percentage: Math.round(parseFloat(s.plan_routines.percentage_pr) * 100),
       reps: s.plan_routines.repetitions,
       completedAt: s.completed_at,

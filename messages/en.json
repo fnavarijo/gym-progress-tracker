@@ -191,7 +191,9 @@
     "logAndBuild": "Log your sets, track your progress, and build strength week by week.",
     "completed": "Completed",
     "scheduledLabel": "Scheduled",
-    "liftedLabel": "Lifted"
+    "liftedLabel": "Lifted",
+    "yourOneRm": "Your 1RM",
+    "oneRmFromLastSet": "Pre-filled from last set — edit if needed"
   },
   "Plans": {
     "title": "Training Plans",
